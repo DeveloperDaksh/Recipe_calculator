@@ -1,12 +1,16 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, LoginForm
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.hashers import make_password, check_password
 
 from .models import UserModel
+from .forms import RegistrationForm, LoginForm, UpdateEmailForm, UpdateContactInfoForm, ForgetPasswordForm
 
 
 def index_page(request):
@@ -53,10 +57,16 @@ def login_user(request):
 
 @login_required(login_url='/login')
 def dashboard(request):
+    user = UserModel.objects.get(username=request.user)
     return render(
         request,
         'dashboard.html',
-        {'username': request.user}
+        {
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name
+        }
     )
 
 
@@ -96,6 +106,94 @@ def create_user(request):
     else:
         form = RegistrationForm()
         return render(request, 'register.html', {'form': form, 'menu': 'create'})
+
+
+@login_required(login_url='/login')
+def getPersonalInfo(request):
+    user = UserModel.objects.get(username=request.user)
+    return render(
+        request,
+        'update_settings.html',
+        {
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name
+        }
+    )
+
+
+class UpdateEmail(LoginRequiredMixin, UpdateView):
+    model = UserModel
+    form_class = UpdateEmailForm
+    template_name = 'update_email.html'
+    success_url = reverse_lazy('change_email')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+@login_required(login_url='/login')
+def updatePassword(request):
+    if request.method == 'POST':
+        form = ForgetPasswordForm(request.POST)
+        if form.is_valid():
+            current_password = form.cleaned_data['current_password']
+            userInfo = UserModel.objects.get(username=request.user)
+            print(current_password)
+            print(check_password(userInfo.password,current_password))
+            if check_password(userInfo.password, current_password):
+                new_password = form.cleaned_data['new_password']
+                confirm_password = form.cleaned_data['confirm_password']
+                if new_password == confirm_password:
+                    userInfo.password = make_password(new_password)
+                    userInfo.save()
+                    return render(
+                        request,
+                        'update_password.html',
+                        {
+                            'form': form,
+                            'success': 'Password Updated'
+                        }
+                    )
+                else:
+                    return render(
+                        request,
+                        'update_password.html',
+                        {
+                            'form': form,
+                            'fail': 'Password Not Matched'
+                        }
+                    )
+            else:
+                return render(
+                    request,
+                    'update_password.html',
+                    {
+                        'form': form,
+                        'fail': 'Current Password is Not Matched'
+                    }
+                )
+
+    else:
+        form = ForgetPasswordForm()
+        return render(
+            request,
+            'update_password.html',
+            {
+                'form': form
+            }
+        )
+
+
+class UpdateContactInfo(LoginRequiredMixin, UpdateView):
+    model = UserModel
+    form_class = UpdateContactInfoForm
+    template_name = 'contact_info.html'
+    success_url = reverse_lazy('contactInfo')
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 def about_us(request):

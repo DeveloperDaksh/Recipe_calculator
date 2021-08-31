@@ -10,4 +10,8 @@ urlpatterns = [
     path('contact', views.contact_us, name='contact'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.user_logout, name='logout'),
+    path('personalinfo', views.getPersonalInfo, name='personalinfo'),
+    path('personalinfo/edit', views.UpdateContactInfo.as_view(), name='contactInfo'),
+    path('personalinfo/change_password', views.updatePassword, name='change_password'),
+    path('personalinfo/change_email', views.UpdateEmail.as_view(), name='change_email'),
 ]
