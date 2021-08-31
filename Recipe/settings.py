@@ -1,16 +1,13 @@
+import string
 from pathlib import Path
-
+from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = config('SECRET_KEY', default=string.ascii_letters)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
-SECRET_KEY = 'django-insecure-b8!1ziupl4po_1d((#l(j__t!@e7(2a6askmmmborx^b+azt5h'
-
-
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,17 +56,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Recipe.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd51mjrpacard1g',
-        'HOST': 'ec2-18-209-153-180.compute-1.amazonaws.com',
-        'USER': 'mycwuapxvpckvz',
-        'PASSWORD': 'b80d3aa82d81e74dc27ba43c8e596cd0f89fe659bfc476124e185fdb51d66a0e',
+        'NAME': config('DB_NAME'),
+        'HOST': config('DB_HOST'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -86,7 +81,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -98,6 +92,5 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
