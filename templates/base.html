@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+    {% load static %}
+    {% load i18n %}
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.css">
+  <link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
+
+  <title>{% block title %}Recipe{% endblock %}</title>
+  {% block stylesheet %}
+  {% endblock %}
+</head>
+<body>
+{% block body %}
+  <nav class="navbar navbar-expand-lg navbar-light py-3 mb-3 shadow-sm" style="background-color:#fff;">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainMenu" style="padding-left: 800px">
+        <div class="navbar-nav mr-auto">
+            <a class="nav-item nav-link{% if menu == 'sampledemo' %} active{% endif %}" href="/">
+                {% trans 'Home' %}
+                {% if menu == 'index' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+            <a class="nav-item nav-link{% if menu == 'login' %} active{% endif %}" href="/login">
+                {% trans 'Login' %}
+                {% if menu == 'login' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+            <a class="nav-item nav-link{% if menu == 'create' %} active{% endif %}"
+               href="/register">
+              {% trans 'Create Account' %}
+              {% if menu == 'create' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+            <a class="nav-item nav-link{% if menu == 'about' %} active{% endif %}"
+               href="/about">
+              {% trans 'About' %}
+              {% if menu == 'about' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+            <a class="nav-item nav-link{% if menu == 'contact' %} active{% endif %}"
+               href="/contact">
+              {% trans 'Contact' %}
+              {% if menu == 'contact' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+            <a class="nav-item nav-link{% if menu == 'help' %} active{% endif %}"
+               href="/help">
+              {% trans 'Help' %}
+              {% if menu == 'help' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
+            </a>
+        </div>
+    </div>
+  </nav>
+  {% block main %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  {% endblock main %}
+{% endblock body %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+<script>
+  $(function () {
+    feather.replace();
+    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+      icons: {
+        time: 'far fa-clock',
+        date: 'far fa-calendar',
+        up: 'fa fa-arrow-up',
+        down: 'fa fa-arrow-down',
+        previous: 'fa fa-chevron-left',
+        next: 'fa fa-chevron-right',
+        today: 'far fa-calendar-check-o',
+        clear: 'far fa-trash',
+        close: 'far fa-times'
+      }
+    });
+    $(".datetimeinput").datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    });
+  });
+</script>
+{% block javascript %}
+{% endblock %}
+</body>
+</html>
