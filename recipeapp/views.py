@@ -7,10 +7,10 @@ from django.views.generic import UpdateView
 from django.utils.translation import gettext as _
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.hashers import make_password, check_password
 
 from .models import UserModel
-from .forms import RegistrationForm, LoginForm, UpdateEmailForm, UpdateContactInfoForm, ForgetPasswordForm
+from .forms import RegistrationForm, LoginForm, UpdateEmailForm, UpdateContactInfoForm, ForgetPasswordForm, \
+    UserSettingsForm
 
 
 def index_page(request):
@@ -111,16 +111,37 @@ def create_user(request):
 @login_required(login_url='/login')
 def getPersonalInfo(request):
     user = UserModel.objects.get(username=request.user)
-    return render(
-        request,
-        'update_settings.html',
-        {
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name
-        }
-    )
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST)
+        if form.is_valid():
+            user.timezone = form.cleaned_data['timezone']
+            user.save()
+            form = UserSettingsForm()
+            return render(
+                request,
+                'update_settings.html',
+                {
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'form': form,
+                    'success': 'TimeZone Is Updated'
+                }
+            )
+    else:
+        form = UserSettingsForm()
+        return render(
+            request,
+            'update_settings.html',
+            {
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'form': form
+            }
+        )
 
 
 class UpdateEmail(LoginRequiredMixin, UpdateView):
@@ -140,20 +161,18 @@ def updatePassword(request):
         if form.is_valid():
             current_password = form.cleaned_data['current_password']
             userInfo = UserModel.objects.get(username=request.user)
-            print(current_password)
-            print(check_password(userInfo.password,current_password))
-            if check_password(userInfo.password, current_password):
+            if userInfo.check_password(current_password):
                 new_password = form.cleaned_data['new_password']
                 confirm_password = form.cleaned_data['confirm_password']
                 if new_password == confirm_password:
-                    userInfo.password = make_password(new_password)
+                    userInfo.set_password(new_password)
                     userInfo.save()
                     return render(
                         request,
                         'update_password.html',
                         {
                             'form': form,
-                            'success': 'Password Updated'
+                            'success': 'Password Updated Valid After Login Again'
                         }
                     )
                 else:

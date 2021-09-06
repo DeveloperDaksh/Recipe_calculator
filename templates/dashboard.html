@@ -52,11 +52,11 @@
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/recipe/page" class="nav-link">Ingredients</a>
+        </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="/dashboard" class="nav-link">Home</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
       </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" class="nav-link">Recipies</a>
@@ -64,20 +64,29 @@
         <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="/categories">Ingredient &amp; Recipe Categories</a></li>
-              <li><a href="/vendors?type=Supplier">Suppliers</a></li>
-              <li><a href="/vendors?type=Customer">Customers</a></li>
-              <li><a href="/vendors?type=ShippingCarrier">Shipping Carriers</a></li>
+              <li><a href="#" class="dropdown-item">Ingredient &amp; Recipe Categories </a></li>
+              <li><a href="#" class="dropdown-item">Suppliers</a></li>
+              <li><a href="#" class="dropdown-item">Customers </a></li>
+              <li><a href="#" class="dropdown-item">Shipping Carriers</a></li>
           </ul>
         </li>
         <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Inventory <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="/categories">Ingredient &amp; Recipe Categories</a></li><li><a href="/vendors?type=Supplier">Suppliers</a></li><li><a href="/vendors?type=Customer">Customers</a></li><li><a href="/vendors?type=ShippingCarrier">Shipping Carriers</a></li>
+              <li style="background-color: #abdde5">Raw Materials</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
+              <li><a href="#" class="dropdown-item">Storage Areas</a></li>
+              <li style="background-color: #abdde5">Finished Goods</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
           </ul>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" class="nav-link">Planning</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Contact</a>
         </li>
     </ul>
 
@@ -225,7 +234,7 @@
 		  <h5>User Settings</h5>
 		  <div class="list-group">
 			<a class="list-group-item" href="/personalinfo"><i class="fa fa-user" aria-hidden="true"></i> Personal Settings</a>
-			<a class="list-group-item" href="/user/change_email"><i class="fa fa-lock" aria-hidden="true"></i> Email &amp; Password</a>
+			<a class="list-group-item" href="/personalinfo/change_email"><i class="fa fa-lock" aria-hidden="true"></i> Email &amp; Password</a>
 		  </div>
 
 		  <h5>Company Settings</h5>
@@ -283,7 +292,7 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item menu-open">
-            <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> New Ingredient</a>
+            <a href="/recipe/new"><i class="fa fa-plus" aria-hidden="true"></i> New Ingredient</a>
               <br/><br/>
             <ul class="nav nav-treeview">
               <li class="nav-item">

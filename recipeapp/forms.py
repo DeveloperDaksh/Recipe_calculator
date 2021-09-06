@@ -1,5 +1,7 @@
+import pytz
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext_lazy as _
 from .models import UserModel
 
 
@@ -66,3 +68,17 @@ class ForgetPasswordForm(forms.Form):
         attrs={'placeholder': 'Enter New Password'}))
     confirm_password = forms.CharField(max_length=225, widget=forms.PasswordInput(
         attrs={'placeholder': 'Confirm  New Password'}))
+
+
+class UserSettingsForm(forms.Form):
+    TIMEZONE_CHOICES = (('', '---------'),) + tuple(map(lambda tz: (tz, tz), pytz.common_timezones))
+
+    timezone = forms.ChoiceField(
+        choices=TIMEZONE_CHOICES,
+        required=False,
+        label=_('Timezone')
+    )
+
+    class Meta:
+        model = UserModel
+        fields = ('timezone',)

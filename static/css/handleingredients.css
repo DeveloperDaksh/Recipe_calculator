@@ -1,0 +1,52 @@
+.list-group-item:first-child {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+a.list-group-item, button.list-group-item {
+    color: #555;
+}
+
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+.mt-2 .nav>li.active>a {
+    color: #eee;
+}
+.mt-2 .nav>li.active>a {
+    font-weight: bold;
+}
+.navbar-nav .nav-item li.active>a{
+    font-weight: bold;
+    color: #eee;
+}
+.container-fluid input{
+    width: 350px;
+}
+#id_category,#id_suppliers,#id_sugarAdded,#id_hasMajorAllergens,#customsupplierid{
+    width: 350px;
+}
+.panel .panel-heading {
+color: #222222;
+background: white;
+font-family: "Avenir", "Lato", Arial, Helvetica, sans-serif;
+font-size: 16px;
+}
+.panel-default>.panel-heading {
+    color: #abdde5;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+#id_majorAllergens{
+    list-style-type:none;
+}
