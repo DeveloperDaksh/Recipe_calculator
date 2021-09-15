@@ -20,6 +20,8 @@
     <script src="{% static 'js/handleingredients.js' %}">
 
     </script>
+    <script src="{% static 'js/handle_measurments.js' %}"></script>
+    <script src="{% static 'js/handle_nutritions.js' %}"></script>
 </head>
 <body class="hold-transition sidebar-mini">
 {% block body %}
@@ -39,7 +41,7 @@
             <a href="/recipe/page" class="nav-link">Ingredients</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Recipies</a>
+            <a href="/recipe/recipelist" class="nav-link">Recipies</a>
         </li>
         <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
@@ -270,7 +272,24 @@
       <div class="content-wrapper">
         <div class="content">
           <div class="container-fluid">
-              <br/><br/><br/>
+              <br/><br/>
+              <div class="modal-content" id="nut-loading" style="display: none">
+                  <div class="modal-header">
+                    <h4 class="modal-title" style="padding-left: 500px">Link to Nutrient Database</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="nutri-close-btn"><span aria-hidden="true">×</span></button>
+                  </div>
+                <div class="modal-body">
+                    <label class="integer optional" for="ingredient_cached_usda_item_id">Search Nutrient Database</label>
+                    <div class="form-group hidden ingredient_cached_usda_item_id"><div><input class="form-control hidden" type="hidden" name="ing-nutri-search" id="ing-search"></div></div>
+                    <div class="input-group leading">
+                      <input type="text" name="cached_usda_item_name" id="cached_usda_item_name" class="form-control" autocomplete="off">
+                      <span class="input-group-btn"><button id="clear_food" class="btn btn-info" type="button">Search</button></span>
+                    </div>
+                    <div id="nutrient_database_search_results" style="display: none;">
+
+                    </div>
+                </div>
+              </div>
               <form method="post" action="/recipe/new">
                   {% csrf_token %}
                   {{ form.name.errors }}
@@ -331,8 +350,8 @@
                       </div>
                       <div id="collapse-nutrition-database-link" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="nutrition-database-link" aria-expanded="true" style="">
                         <div class="panel-body">
-
                         <div id="ingredient-link-to-external-database">
+
                         <label for="fdc_link">Link to Nutrient Database</label>
                         <p>You might want to link ingredients to the nutrient database if:
                           </p><ul>
@@ -342,12 +361,73 @@
                           </ul>
                         <p></p>
 
-
-                      <a class="btn btn-info" data-toggle="modal" data-target="#link-fdc" href="#">Click Here To Link...</a>
+                      <button class="btn btn-info" type="button" id="nutri-link-btn">Click Here To Link...</button>
                     </div>
                         </div>
                       </div>
                     </div>
+                  <br/>
+                  <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="measurement-converters">
+                        <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters" class="text-grey-900" style="text-decoration:none;">
+                          <i class="fa fa-balance-scale" aria-hidden="true"></i>Measurement Converters
+                        </a>
+                        <span class="pull-right">
+                          <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                          </a>
+                        </span>
+                      </div>
+                      <div id="collapse-measurement-converters" class="panel-collapse collapse " role="tabpanel" aria-labelledby="measurement-converters">
+                        <div class="panel-body">
+
+                        <div class="row">
+                          <div class="col-lg-12">
+                              <div id="default-weight-to-volume-conversion-help">
+                      <div class="well">
+                        <p>
+                          If your ingredient is purchased by weight (e.g. lbs, kgs, etc.) but in your recipe you use it as a volume (e.g. cups, tsp, etc.), you'll need
+                          to create a <strong>measurement converter</strong>. You can weigh or measure the ingredient yourself, or you can use an online
+                          conversion tool (we recommend using <a class="text-blue-900" href="https://www.wolframalpha.com/">Wolfram Alpha</a>.
+                          Check out the video below to see how easy this is!).
+                        </p>
+                        <p>If you have linked your ingredient to the <strong>nutrient database</strong> above, we will display any automatic measurement conversions
+                          that are available below <strong>if they exist</strong>.
+                        </p>
+                        <p>
+                          If you need just a little more help, watch our <strong>two minute measurement converter video</strong> and
+                          it should clear up any last questions! <a class="venobox btn btn-info vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/422860777"><i class="vmiddle fas fa-video" aria-hidden="true"></i> Watch Video Now</a>
+                        </p>
+                      </div>
+                    </div>
+
+                            <div id="conversion_help" data-food-weight-path="https://recipecostcalculator.net/food_descriptions/conversion_help"></div>
+                            <div class="ingredient-form-checked-measurements-summary-JS"></div>
+                            <div class="form-group measurement-converters measurement-converters-JS">
+                      <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
+
+
+
+                    <br>
+                    <input id="btnAdd" type="button" value="Add New Measurements" />
+                    <br /><br/>
+                    <div id="TextBoxContainer">
+                        <!--Textboxes will be added here -->
+                        <input type="hidden" name="ingMeasurementsData" id="id_ingMeasurementsData" value="">
+                    </div>
+                    <input id="btnGet" type="button" value="Save Measurements" style="visibility: hidden" />
+                    <!-- do logic -->
+
+                      <br>
+                    </div>
+
+
+                          </div>
+                        </div>
+
+                        </div>
+                      </div>
+                  </div>
                   <br/>
                   <div class="panel panel-default">
                       <div class="panel-heading" role="tab" id="supplemental-ingredient-fields">
