@@ -31,6 +31,9 @@ $(function () {
             $("#btnGet").css({"visibility":"hidden"});
             document.getElementById("id_ingMeasurementsData").value=''
         }
+        else {
+            $("#btnGet").css({"visibility":"visible"});
+        }
     });
 });
 function GetDynamicTextBox(value) {

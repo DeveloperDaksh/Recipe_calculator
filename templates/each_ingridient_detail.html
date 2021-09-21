@@ -1,0 +1,39 @@
+{% extends 'each_ingridient_base_page.html' %}
+
+{% block content %}
+    <div class="col-md-12">
+        <h3 class="h3-heading" id="page-heading">{{ ingredient.name }}</h3>
+    </div>
+    <div class="panel-body">
+        <div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Order Code</th>
+                <th>Brand</th>
+                <th>Purchase amount</th>
+                <th>Price</th>
+                <th style="text-align: right;"><span id="filter-info"></span></th>
+              </tr>
+            </thead>
+
+      <tbody>
+        <tr>
+            <td><a href="/recipe/ingridientdetails/{{ ingrideient.id }}">{{ ingredient.name }}</a></td>
+            <td>{{ ingredient.orderCode }}</td>
+            <td>{{ ingredient.brand }}</td>
+            <td>{{ ingredient.packSize }}/{{ ingredient.caseQuantity }}cup</td>
+            <td>${{ ingredient.price }}</td>
+            <td class="actions">
+              <div class="btn-group btn-group-xs">
+                <a class="btn btn-default" data-toggle="tooltip" data-original-title="Edit" data-remote="true" href="#"><i class="vmiddle fas fa-edit" aria-hidden="true"></i></a>
+                <a data-confirm="Delete this Supplier Ingredient?" class="btn btn-default" data-toggle="tooltip" data-original-title="Delete" data-remote="true" rel="nofollow" data-method="delete" href="#"><i class="vmiddle fas fa-trash" aria-hidden="true"></i></a>
+              </div>
+            </td>
+        </tr>
+  </tbody>
+  </table>
+        </div>
+    </div>
+{% endblock %}

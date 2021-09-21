@@ -7,7 +7,7 @@ $(function (){
             '<option value="US Tablespoon (tbsp) (14.79 ml)">US Tablespoon (tbsp) (14.79 ml)</option>\n' +
             '<option value="Fluid-ounce (floz) (29.57 ml)">Fluid-ounce (floz) (29.57 ml)</option>\n' +
             '<option value="Deciliter (dL) (100 ml)">Deciliter (dL) (100 ml)</option>\n' +
-            '<option value=">US Cup (cup) (236.59 ml)">US Cup (cup) (236.59 ml)</option>\n' +
+            '<option value="US Cup (cup) (236.59 ml)">US Cup (cup) (236.59 ml)</option>\n' +
             '<option value="Pint (pt) (473.18 ml)">Pint (pt) (473.18 ml)</option>\n' +
             '<option value="Quart (qt) (946.35 ml)">Quart (qt) (946.35 ml)</option>\n' +
             '<option value="Liter (L) (1000 ml)">Liter (L) (1000 ml)</option>\n' +

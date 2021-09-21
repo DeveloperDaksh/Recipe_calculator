@@ -103,9 +103,16 @@ class IngredientData(models.Model):
 
 
 class RecipesModel(models.Model):
+    Category_Choices = [
+        ("Food", "Food"),
+        ("Labor", "Labor"),
+        ("Packaging", "Packaging"),
+        ("UnCategorized", "UnCategorized")
+    ]
+
     recipe_user = models.CharField(max_length=225)
     recipe_name = models.CharField(max_length=225)
-    recipe_category = models.CharField(max_length=225, null=True, blank=True)
+    recipe_category = models.CharField(max_length=225, null=True, blank=True,choices=Category_Choices)
     recipe_yield_count = models.IntegerField()
     yield_units = models.CharField(max_length=225)
     other_ing_data = models.ManyToManyField(IngredientData)

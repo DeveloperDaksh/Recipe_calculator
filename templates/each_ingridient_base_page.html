@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% load i18n %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recipe Cost Calculator</title>
@@ -10,70 +11,17 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Font Awesome Icons -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
-    <script type="text/javascript" src="{% static 'js/ingridents_filter.js' %}"></script>
-    <style>
-        .list-group-item:first-child {
-            border-top-right-radius: 4px;
-            border-top-left-radius: 4px;
-        }
-        a.list-group-item, button.list-group-item {
-            color: #555;
-        }
-
-        .list-group-item {
-            position: relative;
-            display: block;
-            padding: 10px 15px;
-            margin-bottom: -1px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-        }
-        .mt-2 .nav>li.active>a {
-            color: #eee;
-        }
-        .mt-2 .nav>li.active>a {
-            font-weight: bold;
-        }
-        .navbar-nav .nav-item li.active>a{
-            font-weight: bold;
-            color: #eee;
-        }
-        .page-header {
-            margin: 0 0 10px 0;
-            margin-top: 0px;
-            margin-right: 0px;
-            margin-bottom: 10px;
-            margin-left: 0px;
-            padding-right: 15px;
-            padding-left: 40px;
-        }
-        .row {
-            margin-left: 15px;
-            margin-right: 15px;
-        }
-
-        .panel-primary {
-            border-color: #2866AA;
-        }
-        .panel {
-            border: none;
-            border-top: 3px solid #212121;
-            border-radius: 3px;
-            box-shadow: 0 1px 1px rgb(0 0 0.1);
-        }
-        panel-body {
-            padding: 15px;
-            padding-right: 15px;
-            padding-bottom: 15px;
-            padding-left: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/handleingredients.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'js/handleingredients.js' %}"></script>
+    <script src="{% static 'js/handle_measurments.js' %}"></script>
+    <script src="{% static 'js/handle_nutritions.js' %}"></script>
 </head>
 <body class="hold-transition sidebar-mini">
+{% block body %}
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -83,9 +31,9 @@
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="/dashboard" class="nav-link">Home</a>
-        </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="/dashboard" class="nav-link">Home</a>
+      </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/recipe/page" class="nav-link">Ingredients</a>
         </li>
@@ -297,51 +245,25 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
-          <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
-        </div>
-        <div class="info">
-          <a href="#" class="d-block">{{ username }}</a>
-        </div>
-      </div>
-
-      <!-- SidebarSearch Form -->
-      <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar Menu -->
       <nav class="mt-2">
+          <br/><br/>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item menu-open">
-            <a href="/recipe/new"><i class="fa fa-plus" aria-hidden="true"></i> New Ingredient</a>
-              <br/><br/>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="#"><i class="fa fa-download" aria-hidden="true"></i> Download Ingredients</a>
-              </li>
+                <li class="nav-item">
+                    <a href="/recipe/new"><i class="fa fa-plus" aria-hidden="true"></i> Create Ingredient</a>
+                </li>
                 <br/>
                 <li class="nav-item">
-                <a href="#"><i class="fa fa-upload" aria-hidden="true"></i> Upload Ingredients</a>
-              </li>
+                    <a href="/recipe/editing/{{ ingredient.id }}"><i class="fas fa-edit"></i> Edit Ingredient</a>
+                </li>
                 <br/>
-              <li class="nav-item">
-                <a class="venobox vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/428390348"><i class="fa fa-video-camera" aria-hidden="true"></i> Watch Introduction Video</a>
-              </li>
+                <li class="nav-item">
+                    <a href="/recipe/ingridientdetails/{{ ingredient.id }}"><i class="fa fa-eye" aria-hidden="true"></i> View Ingredient</a>
+                </li>
                 <br/>
-              <li class="nav-item">
-                <a href="#"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
-              </li>
-            </ul>
+                <li class="nav-item">
+                    <a href="#"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
+                </li>
           </li>
         </ul>
       </nav>
@@ -351,96 +273,19 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+    {% block main %}
+      <div class="content-wrapper">
+        <div class="content">
+          <div class="container-fluid">
+              <br/><br/>
+                <!-- main content -->
+                {% block content %}
 
-      <div class="page-header small">
-          <div class="row">
-              <div class="col-md-12">
-                  <br/><br/>
-                <h3 class="h3-heading" id="page-heading" style="background-color: #faf8f7">Your Ingredients</h3>
-              </div>
+                {% endblock %}
           </div>
+        </div>
       </div>
-
-    <!-- /.content-header -->
-
-    <!-- Main content -->
-
-      <!-- /.card-header -->
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Filter By Content</label>
-                    <input type="text" class="form-control" id="filetr-by-name" placeholder="Start Typing a name">
-                  </div>
-                <!-- /.form-group -->
-              </div>
-              <!-- /.col -->
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Filter By Category</label>
-                  <select id="ingrident-filter-category" class="form-control select2bs4" style="width: 100%;">
-                    <option value="Food">Food</option>
-                    <option value="Labor">Labor</option>
-                    <option value="Packaging">Packaging</option>
-                      <option value="UnCategorized">UnCategorized</option>
-                  </select>
-                </div>
-              </div>
-              <!-- /.col -->
-            </div>
-            <!-- /.row -->
-          </div>
-
-      <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Showing Ingredients List</h3>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body table-responsive p-0" style="height: 300px;">
-                <table class="table table-head-fixed text-nowrap" id="items-display-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Purchase Amount</th>
-                      <th>Price</th>
-                        <th>Category</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                      {% for ingrideient in ingridients %}
-                          <tr>
-                            <td>
-                                <a href="/recipe/ingridientdetails/{{ ingrideient.id }}">{{ ingrideient.name }}</a>
-                            </td>
-                            <td>
-                                {{ ingrideient.price }}
-                            </td>
-                            <td>
-                                {{ ingrideient.caseQuantity }}/{{ ingrideient.packSize }}
-                            </td>
-                            <td id="ingrident-category-item">
-                                {{ ingrideient.category }}
-                            </td>
-                          </tr>
-                      {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-      </div>
-
-
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+    {% endblock main %}
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -457,6 +302,7 @@
 
   </footer>
 </div>
+{% endblock body %}
 <!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->
