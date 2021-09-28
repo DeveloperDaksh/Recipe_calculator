@@ -1,0 +1,70 @@
+{% extends 'company_base.html' %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% block content %}
+    <div class="col-lg-12">
+        {% if fail %}
+            <p><span style="color:crimson">{{ fail }}</span></p>
+        {% endif %}
+        {% if success %}
+            <p><span style="color: #00cd5a">{{ success }}</span></p>
+        {% endif %}
+        <div class="panel panel-primary ">
+            <div class="panel-heading">
+                <h3>Company Settings</h3>
+            </div>
+            <div class="panel-body">
+                <br/>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form1 | crispy }}
+                    <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+                </form>
+            </div>
+        </div>
+        <br/>
+        <div class="panel panel-primary ">
+            <div class="panel-heading">
+                <h3>Currency Display Settings</h3>
+            </div>
+            <div class="panel-body">
+                <br/>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form2 | crispy }}
+                    <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+                </form>
+            </div>
+        </div>
+        <br/>
+        <div class="panel panel-primary ">
+            <div class="panel-heading">
+                <h3>Company Billing information</h3>
+            </div>
+            <div class="panel-body">
+                <br/>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form3 | crispy }}
+                    <button type="submit" class="btn btn-success">{% trans 'Save' %}</button>
+                </form>
+            </div>
+        </div>
+        <br/>
+        <div class="panel panel-primary ">
+            <div class="panel-heading">
+                <h3>Danger Zone</h3>
+            </div>
+            <div class="panel-body">
+                <br/>
+                <p>Use this if you want to clear this company account by deleting all recipes, ingredients, categories, suppliers, etc. <strong>THIS CAN NOT BE UNDONE</strong>.</p>
+                <br/>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form4 | crispy }}
+                    <button type="submit" class="btn btn-success" style="background-color: crimson">{% trans 'Delete all data in the company account' %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

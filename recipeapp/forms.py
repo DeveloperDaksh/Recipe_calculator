@@ -2,7 +2,9 @@ import pytz
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext_lazy as _
+
 from .models import UserModel
+from .models import FeedBack
 
 
 class UserForm(UserCreationForm):
@@ -82,3 +84,32 @@ class UserSettingsForm(forms.Form):
     class Meta:
         model = UserModel
         fields = ('timezone',)
+
+
+class FeedBackForm(forms.ModelForm):
+    feeling_choice = (
+        ("I'm feeling happy", "I'm feeling happy"),
+        ("I'm feeling sad", "I'm feeling sad"),
+        ("I'm feeling frustrated", "I'm feeling frustrated"),
+        ("I'm feeling confused", "I'm feeling confused"),
+        ("I'm feeling happy", "I'm feeling happy"),
+        ("I'm feeling intrigued", "I'm feeling intrigued"),
+    )
+    feeling = forms.ChoiceField(choices=feeling_choice, label=_('How are you feeling'))
+
+    class Meta:
+        model = FeedBack
+        fields = ['feeling', 'suggestion']
+
+
+class ForgetPassword(forms.Form):
+    password = forms.CharField(max_length=225, widget=forms.PasswordInput(attrs={'placeholder': 'Enter New Password'}),
+                               label='Password')
+    conform_password = forms.CharField(max_length=225,
+                                       widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+                                       label='Confirm Password')
+
+
+class EmailForm(forms.Form):
+    user_email = forms.EmailField(max_length=225, widget=forms.EmailInput(attrs={'placeholder': 'Enter Email'}),
+                                  label='Enter Registered Email')

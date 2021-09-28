@@ -16,6 +16,7 @@ class IngredientsForm(forms.ModelForm):
                     continue
                 supp.append((sup.suppliers, sup.suppliers))
             self.Supplier_Choice = [
+                ("", "------------"),
                 ("Add Supplier", "Add Supplier"),
             ]
             for sample in list(set(supp)):
@@ -23,23 +24,24 @@ class IngredientsForm(forms.ModelForm):
             print(self.Supplier_Choice)
         else:
             self.Supplier_Choice = [
-                ("--------", "------------"),
+                ("", "------------"),
                 ("Add Supplier", "Add Supplier")
             ]
         self.fields['suppliers'] = forms.ChoiceField(choices=self.Supplier_Choice, required=False)
 
     Alleregen_Choices = [
-        ("Cerly", "Cerly"),
-        ("Eggs", "Eggs"),
-        ("Fish", "Fish"),
-        ("Milk", "Milk")
+        ("Cerly", "Cerly"), ("Shellfish", "Shellfish"), ("Eggs", "Eggs"), ("Soy", "Soy"),
+        ("Fish", "Fish"), ("Sulfites", "Sulfites"), ("Milk", "Milk"), ("Tree Nuts", "Tree Nuts"),
+        ("Lupin", "Lupin"), ("Wheat", "Wheat"), ("Molluscs", "Molluscs"), ("Mustard", "Mustard"),
+        ("Peanuts", "Peanuts"), ("Sesame", "Sesame")
     ]
     majorAllergens = forms.MultipleChoiceField(required=False, choices=Alleregen_Choices,
                                                widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Ingredients
-        exclude = ('username', 'fromMeasurementData', 'fromMeasurementUnits', 'toMeasurementData', 'toMeasurementUnits')
+        exclude = ('username', 'fromMeasurementData', 'fromMeasurementUnits', 'toMeasurementData', 'toMeasurementUnits',
+                   'company_name')
         fields = '__all__'
 
 
@@ -48,5 +50,5 @@ class RecipeForm(forms.ModelForm):
 
     class Meta:
         model = RecipesModel
-        exclude = ('other_ing_data', 'recipe_user')
+        exclude = ('other_ing_data', 'recipe_user', 'company_name')
         fields = '__all__'

@@ -38,9 +38,9 @@ $(function () {
 });
 function GetDynamicTextBox(value) {
     var options = document.getElementById("id_qtyUnits").innerHTML
-    return '<input name = "fromMeasurment" type="number" placeholder="From Measurment" value = "' + value + '" style="width: auto" />&nbsp;' +
+    return '<input name = "fromMeasurment" type="number" step="any" placeholder="From Measurment" value = "' + value + '" style="width: auto" />&nbsp;' +
             '<select name="ing-from-measuremnts">'+options+'</select>&nbsp;&nbsp;=&nbsp;&nbsp;'+
-            '<input name = "toMeasurment" type="number" placeholder="To Measurment" value = "' + value + '" style="width: auto" />&nbsp;' +
+            '<input name = "toMeasurment" type="number" step="any" placeholder="To Measurment" value = "' + value + '" style="width: auto" />&nbsp;' +
             '<select name="ing-to-measuremnts">'+options+'</select>&nbsp;&nbsp;'+
             '<input type="button" value="Remove" class="remove" style="width: auto" /><br/><br/>'
 }

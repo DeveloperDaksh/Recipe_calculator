@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'js/company_options.js' %}"></script>
     <style>
         .list-group-item:first-child {
             border-top-right-radius: 4px;
@@ -209,12 +211,12 @@
           <i class="fas fa-th-large"></i>
         </a>
       </li>
-        <li class="dropdown user-nav open">
-	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <li class="dropdown user-nav" id="profile-button">
+	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	  <i class="fa fa-user" aria-hidden="true"></i>
 	  <span class="caret caret-light"></span>
 	</button>
-	<div class="dropdown-menu" role="menu" style="width: 400px; padding-left: 20px">
+	<div class="dropdown-menu" id="drop-profile-show" role="menu" style="width: 400px; padding-left: 20px">
 	  <div class="m20">
 		  <address>
 			<strong><i class="fa fa-user" aria-hidden="true"></i> Logged in as</strong><br>
@@ -224,7 +226,21 @@
 		  </address>
 		  <address>
 			<strong><i class="fa fa-building" aria-hidden="true"></i> Active company</strong><br>
-			    {{ first_name }}  {{ last_name }} Company
+			    {% if many_companies %}
+                    <select id="company-select">
+                        {% for company_detail in company_details %}
+                            {% if company_detail.name == company_name %}
+                                <option selected value="{{ company_name }}">{{ company_name }}</option>
+                            {% else %}
+                                <option value="{{ company_detail.name }}">{{ company_detail.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+			    {% else %}
+                    {% for company_detail in company_details %}
+                        {{ company_detail.name }}
+                    {% endfor %}
+                {% endif %}
 		  </address>
 		  <address>
 			<strong><i class="fa fa-lock" aria-hidden="true"></i> Role</strong><br>
@@ -278,14 +294,7 @@
 
       <!-- SidebarSearch Form -->
       <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
-          </div>
-        </div>
+
       </div>
 
       <!-- Sidebar Menu -->
@@ -304,12 +313,15 @@
               </li>
                 <br/>
               <li class="nav-item">
-                <a href="#"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
+                <a href="{% url 'feedback' %}"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
               </li>
             </ul>
           </li>
         </ul>
       </nav>
+        <div style="padding-top: 250px">
+            <p style="font-size: 16px"><h3 style="color: white;">{{ company_name }}</h3><span style="color: white;">(owner)</span></p>
+        </div>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->

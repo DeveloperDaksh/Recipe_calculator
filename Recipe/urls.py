@@ -5,4 +5,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('recipeapp.urls')),
     path('recipe/', include('recipesandingredients.urls')),
+    path('company/',include('company.urls')),
 ]

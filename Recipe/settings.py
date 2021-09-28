@@ -10,6 +10,9 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+SENDGRID_EMAIL_API = config('SENDGRID_EMAIL_API')
+FROM_EMAIL = config('FROM_EMAIL')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,10 +22,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'crispy_forms',
+    'rest_framework',
+    'rest_framework.authtoken',
 
 
     'recipeapp.apps.RecipeappConfig',
     'recipesandingredients.apps.RecipesandingredientsConfig',
+    'company.apps.CompanyConfig',
 ]
 
 MIDDLEWARE = [
@@ -99,10 +105,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-'''STATICFILES_DIRS = (
+STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
-)'''
+)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

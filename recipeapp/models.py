@@ -7,3 +7,9 @@ class UserModel(AbstractUser):
 
     class Meta:
         db_table = 'auth_user'
+
+
+class FeedBack(models.Model):
+    user = models.CharField(max_length=225)
+    feeling = models.CharField(max_length=225)
+    suggestion = models.TextField(blank=True, null=True)

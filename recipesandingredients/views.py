@@ -1,8 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
+import io
+import csv
 
 from recipeapp.models import UserModel
+from company.models import Company
 
 from .forms import IngredientsForm, RecipeForm
 from .models import Ingredients, RecipesModel, IngredientData
@@ -10,6 +15,13 @@ from .models import Ingredients, RecipesModel, IngredientData
 
 @login_required(login_url='/login')
 def handleIngredients(request):
+    user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
     if request.method == 'POST':
         form = IngredientsForm(request=request, data=request.POST)
         print(form.is_valid())
@@ -24,18 +36,24 @@ def handleIngredients(request):
                     'add_ingredients.html',
                     {
                         'form': form,
-                        'fail': 'Name Already Exists'
+                        'fail': 'Name Already Exists',
+                        'username': user.username,
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'many_companies': many_companies,
+                        'company_details': company_details,
+                        'company_name': company_name
                     }
                 )
             except Ingredients.DoesNotExist:
-                print(form.is_valid())
-                print(form.cleaned_data['suppliers'])
-                print(request.POST.get('customsupplier'))
                 ingredientsdata = form.save(commit=False)
                 ingredientsdata.username = request.user
                 ingredientsdata.save()
                 print("Saved")
                 indredients = Ingredients.objects.get(username=request.user, name=form.cleaned_data['name'])
+                indredients.company_name = company_name
+                indredients.save()
                 if form.cleaned_data['suppliers'] == 'Add Supplier':
                     indredients.suppliers = request.POST.get('customsupplier')
                     indredients.save()
@@ -56,7 +74,6 @@ def handleIngredients(request):
                     print("Ingredients Saved")
                 return redirect('/recipe/page')
     else:
-        user = UserModel.objects.get(username=request.user)
         form = IngredientsForm(request=request)
         return render(
             request,
@@ -66,7 +83,10 @@ def handleIngredients(request):
                 'email': user.email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'form': form
+                'form': form,
+                'many_companies': many_companies,
+                'company_details': company_details,
+                'company_name': company_name
             }
         )
 
@@ -74,7 +94,13 @@ def handleIngredients(request):
 @login_required(login_url='/login')
 def ingredientsDashboard(request):
     user = UserModel.objects.get(username=request.user)
-    ingridients = Ingredients.objects.filter(username=request.user)
+    company_name = request.session['company_name']
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    ingridients = Ingredients.objects.filter(username=request.user, company_name=company_name)
     return render(
         request,
         'ingredients_dashboard.html',
@@ -84,6 +110,9 @@ def ingredientsDashboard(request):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'many_companies': many_companies,
+            'company_details': company_details,
+            'company_name': company_name
         }
     )
 
@@ -91,7 +120,13 @@ def ingredientsDashboard(request):
 @login_required(login_url='/login')
 def recipeDashboard(request):
     user = UserModel.objects.get(username=request.user)
-    recipies = RecipesModel.objects.filter(recipe_user=str(request.user))
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
+    recipies = RecipesModel.objects.filter(recipe_user=str(request.user), company_name=company_name)
     return render(
         request,
         'recipe_dashboard.html',
@@ -100,7 +135,10 @@ def recipeDashboard(request):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'recipies': recipies
+            'recipies': recipies,
+            'many_companies': many_companies,
+            'company_details': company_details,
+            'company_name': company_name
         }
     )
 
@@ -108,6 +146,12 @@ def recipeDashboard(request):
 @login_required(login_url='/login')
 def handleRecipes(request):
     user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
     ingredients = Ingredients.objects.filter(username=request.user)
     if request.method == 'POST':
         form = RecipeForm(request.POST)
@@ -125,7 +169,10 @@ def handleRecipes(request):
                         'email': user.email,
                         'first_name': user.first_name,
                         'last_name': user.last_name,
-                        'form': form
+                        'form': form,
+                        'many_companies': many_companies,
+                        'company_details': company_details,
+                        'company_name': company_name
                     }
                 )
             except RecipesModel.DoesNotExist:
@@ -133,11 +180,19 @@ def handleRecipes(request):
                     recipe = form.save(commit=False)
                     recipe.recipe_user = str(request.user)
                     recipe.save()
+                    recipedetails = RecipesModel.objects.get(recipe_user=str(request.user),
+                                                             recipe_name=form.cleaned_data['recipe_name'])
+                    recipedetails.company_name = company_name
+                    recipedetails.save()
                     return redirect('/recipe/details/' + str(recipe.id))
                 else:
                     recipe = form.save(commit=False)
                     recipe.recipe_user = str(request.user)
                     recipe.save()
+                    recipedetails = RecipesModel.objects.get(recipe_user=str(request.user),
+                                                             recipe_name=form.cleaned_data['recipe_name'])
+                    recipedetails.company_name = company_name
+                    recipedetails.save()
                     for i in range(len(request.POST.getlist('ingAmount'))):
                         ingredient = IngredientData.objects.create(
                             ing_name=request.POST.getlist('ingridientName')[i],
@@ -160,7 +215,10 @@ def handleRecipes(request):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'form': form,
-                'ingredients': ingredients
+                'ingredients': ingredients,
+                'many_companies': many_companies,
+                'company_details': company_details,
+                'company_name': company_name
             }
         )
 
@@ -168,6 +226,12 @@ def handleRecipes(request):
 @login_required(login_url='/login')
 def recipe_detail(request, ing_id):
     user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
     recipe = RecipesModel.objects.get(recipe_user=str(request.user), id=ing_id)
     return render(
         request,
@@ -177,13 +241,23 @@ def recipe_detail(request, ing_id):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'recipe': recipe
+            'recipe': recipe,
+            'many_companies': many_companies,
+            'company_details': company_details,
+            'company_name': company_name
         }
     )
 
 
 @login_required(login_url='/login')
 def edit_recipe(request, ing_id):
+    user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
     recipe = RecipesModel.objects.get(recipe_user=str(request.user), id=ing_id)
     ingredients = Ingredients.objects.filter(username=request.user)
     other_ing = []
@@ -224,7 +298,14 @@ def edit_recipe(request, ing_id):
                         'ingredients': ingredients,
                         'other_ing': other_ing,
                         'unit_options': unit_options,
-                        'fail': 'Recipe Name Already Exists'
+                        'fail': 'Recipe Name Already Exists',
+                        'username': user.username,
+                        'email': user.email,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'many_companies': many_companies,
+                        'company_details': company_details,
+                        'company_name': company_name
                     }
                 )
         except RecipesModel.DoesNotExist:
@@ -262,27 +343,56 @@ def edit_recipe(request, ing_id):
                 'has_other': has_other,
                 'ingredients': ingredients,
                 'other_ing': other_ing,
-                'unit_options': unit_options
+                'unit_options': unit_options,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'many_companies': many_companies,
+                'company_details': company_details,
+                'company_name': company_name
             }
         )
 
 
 @login_required(login_url='/login')
 def ingredient_details(request, ing_id):
+    user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
+    company_name = request.session['company_name']
     ingredient = Ingredients.objects.get(username=request.user, id=ing_id)
     return render(
         request,
         'each_ingridient_detail.html',
         {
-            'ingredient': ingredient
+            'ingredient': ingredient,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'many_companies': many_companies,
+            'company_details': company_details,
+            'company_name': company_name
         }
     )
 
 
 @login_required(login_url='/login')
 def edit_ingredient(request, ing_id):
+    user = UserModel.objects.get(username=request.user)
+    company_details = Company.objects.filter(user=request.user)
+    company_name = request.session['company_name']
+    if company_details.count() > 1:
+        many_companies = True
+    else:
+        many_companies = False
     ingredient = Ingredients.objects.get(username=request.user, id=ing_id)
-    allergens_list = ['Cerly', 'Eggs', 'Fish', 'Milk']
+    allergens_list = ['Cerly', 'Eggs', 'Fish', 'Milk', 'Lupin', 'Molluscs', 'Mustard', 'Peanuts', 'Sesame', 'Shellfish',
+                      'Soy', 'Sulfites', 'Tree Nuts', 'Wheat']
     if ingredient.hasMajorAllergens:
         allergens = ingredient.majorAllergens
         print(allergens)
@@ -291,10 +401,22 @@ def edit_ingredient(request, ing_id):
     if ingredient.fromMeasurementData is None:
         has_measurments = False
         measurements = None
+        ing_val = ''
     else:
         has_measurments = True
         measurements = zip(ingredient.fromMeasurementData, ingredient.fromMeasurementUnits,
                            ingredient.toMeasurementData, ingredient.toMeasurementUnits)
+        from_md = ''
+        from_mu = ''
+        to_md = ''
+        to_mu = ''
+        for each in zip(ingredient.fromMeasurementData, ingredient.fromMeasurementUnits,
+                        ingredient.toMeasurementData, ingredient.toMeasurementUnits):
+            from_md = from_md + str(each[0]) + ','
+            from_mu = from_mu + str(each[1]) + ','
+            to_md = to_md + str(each[2]) + ','
+            to_mu = to_mu + str(each[3]) + ','
+        ing_val = from_md + ';' + to_md + ';' + from_mu + ';' + to_mu
     if request.method == 'POST':
         form = IngredientsForm(instance=ingredient, request=request, data=request.POST)
         if form.is_valid():
@@ -308,8 +430,14 @@ def edit_ingredient(request, ing_id):
                 form = IngredientsForm(instance=ingredient, request=request)
             ingMeasurementsData = request.POST.get('ingMeasurementsData')
             if ingMeasurementsData == '':
-                pass
+                print("delete all")
+                indredients.fromMeasurementUnits = []
+                indredients.fromMeasurementData = []
+                indredients.toMeasurementUnits = []
+                indredients.toMeasurementData = []
+                indredients.save()
             else:
+                print(ingMeasurementsData)
                 ingdata = ingMeasurementsData.split(';')
                 fromdata = ingdata[0].split(',')
                 todata = ingdata[1].split(',')
@@ -331,11 +459,21 @@ def edit_ingredient(request, ing_id):
                 'has_measurements': has_measurments,
                 'measurements': measurements,
                 'allergens': allergens,
-                'allergens_list': allergens_list
+                'allergens_list': allergens_list,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'many_companies': many_companies,
+                'company_details': company_details,
+                'company_name': company_name,
+                'ing_val': ing_val
             }
         )
     else:
         print(ingredient.fromMeasurementData)
+        print(ingredient.fromMeasurementUnits)
+        print(ingredient.toMeasurementUnits)
         form = IngredientsForm(instance=ingredient, request=request)
         return render(
             request,
@@ -347,6 +485,72 @@ def edit_ingredient(request, ing_id):
                 'has_measurements': has_measurments,
                 'measurements': measurements,
                 'allergens': allergens,
-                'allergens_list': allergens_list
+                'allergens_list': allergens_list,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'many_companies': many_companies,
+                'company_details': company_details,
+                'company_name': company_name,
+                'ing_val': ing_val
             }
         )
+
+
+@login_required(login_url='/login')
+def delete_ingredient(request, ing_id):
+    ingredient = Ingredients.objects.get(username=request.user, id=ing_id)
+    ingredient.delete()
+    return redirect('/recipe/page')
+
+
+@login_required(login_url='/login')
+def delete_recipe(request, rec_id):
+    recipe = RecipesModel.objects.get(recipe_user=request.user, id=rec_id)
+    recipe.delete()
+    return redirect('/recipe/recipelist')
+
+
+@login_required(login_url='/login')
+def download_ingredients(request):
+    ingredients = Ingredients.objects.filter(username=request.user)
+    fields = ['Name', 'price', 'case quantity', 'pack size', 'quantity units', 'category', 'suppliers', 'order code',
+              'brand', 'country of origin', 'storage areas', 'par levels', 'par units'
+              ]
+    data = []
+    for ingredient in ingredients:
+        data.append(
+            [str(ingredient.name), str(ingredient.price), str(ingredient.caseQuantity), str(ingredient.packSize),
+             str(ingredient.qtyUnits), str(ingredient.category), str(ingredient.suppliers), str(ingredient.orderCode),
+             str(ingredient.brand), str(ingredient.countryOfOrigin), str(ingredient.storageAreas),
+             str(ingredient.parLevel), str(ingredient.parUnits)])
+    file = io.StringIO()
+    writer = csv.writer(file, delimiter=',')
+    writer.writerow(fields)
+    writer.writerows(data)
+    csv_data = file.getvalue()
+    final_data = csv_data.encode('utf-8')
+    byte_io = io.BytesIO(final_data)
+    response = HttpResponse(FileWrapper(byte_io), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=ingredients.csv'
+    return response
+
+
+@login_required(login_url='/login')
+def download_recipes(request):
+    recipies = RecipesModel.objects.filter(recipe_user=str(request.user))
+    fields = ['recipe names', 'recipe category', 'recipe yield count', 'yield units']
+    data = []
+    for recipe in recipies:
+        data.append([recipe.recipe_name, recipe.recipe_category, recipe.recipe_yield_count, recipe.yield_units])
+    file = io.StringIO()
+    writer = csv.writer(file, delimiter=',')
+    writer.writerow(fields)
+    writer.writerows(data)
+    csv_data = file.getvalue()
+    final_data = csv_data.encode('utf-8')
+    byte_io = io.BytesIO(final_data)
+    response = HttpResponse(FileWrapper(byte_io), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Recipe.csv'
+    return response
