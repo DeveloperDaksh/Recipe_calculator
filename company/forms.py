@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company
+from .models import Company, Customers, ShippingCarriers
 
 
 class CompanyForm(forms.ModelForm):
@@ -240,3 +240,17 @@ class BillingCountry(forms.ModelForm):
 class DeleteForm(forms.Form):
     password = forms.CharField(max_length=225, widget=forms.PasswordInput(attrs={'placeholder': ' Enter Password'}),
                                label='You must provide your password to perform this action.')
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customers
+        exclude = ('user', 'company_name')
+        fields = '__all__'
+
+
+class ShippingCarrierForm(forms.ModelForm):
+    class Meta:
+        model = ShippingCarriers
+        exclude = ('user', 'company_name')
+        fields = '__all__'

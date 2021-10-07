@@ -1,5 +1,23 @@
 {% extends 'each_ingridient_base_page.html' %}
 {% block content %}
+      <div class="modal-content" id="nut-loading" style="display: none">
+          <div class="modal-header">
+            <h4 class="modal-title" style="padding-left: 500px">Link to Nutrient Database</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="nutri-close-btn"><span aria-hidden="true">×</span></button>
+          </div>
+        <div class="modal-body">
+            <label class="integer optional" for="ingredient_cached_usda_item_id">Search Nutrient Database</label>
+            <div class="form-group hidden ingredient_cached_usda_item_id"><div><input class="form-control hidden" type="hidden" name="ing-nutri-search" id="ing-search"></div></div>
+            <div class="input-group leading">
+              <input type="text" name="cached_usda_item_name" id="cached_usda_item_name" class="form-control" autocomplete="off">
+              <span class="input-group-btn"><button id="clear_food" class="btn btn-info" type="button" style="display: block">Search</button></span>
+                <span class="input-group-btn"><button id="reset_food" class="btn btn-info" type="button" style="display: none">Unlink</button></span>
+            </div>
+            <div id="nutrient_database_search_results" style="display: none;">
+
+            </div>
+        </div>
+      </div>
     <form method="post">
       {% csrf_token %}
       {{ form.name.errors }}
@@ -70,8 +88,9 @@
                   (measurement converters are used to provide unit conversions, for example, weight (kg, lb) to volume (gallons, pints, liters)).</li>
               </ul>
             <p></p>
-
-          <button class="btn btn-info" type="button" id="nutri-link-btn">Click Here To Link...</button>
+            <p id="display-selected-nutrition" style="font-size: 15px;display: none"></p>
+          <button class="btn btn-info" type="button" id="nutri-link-btn" style="display: block">Click Here To Link...</button>
+                <button class="btn btn-info" type="button" id="nutri-link-btn-change" style="display: none">Click Here To Change...</button>
         </div>
             </div>
           </div>
@@ -115,6 +134,14 @@
                 <div class="ingredient-form-checked-measurements-summary-JS"></div>
                 <div class="form-group measurement-converters measurement-converters-JS">
           <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
+        <br/>
+        <p id="display-units-msg"></p>
+        <br/>
+        <div id="conversion_help" style="display: none">
+
+        </div>
+        <input type="hidden" name="nutri-data-link-value" value="{{ ingredient.nutriationData }}" id="nutri-data-link-value">
+        <br/>
 
 
 

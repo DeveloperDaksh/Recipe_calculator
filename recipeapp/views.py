@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 
 from .models import UserModel
 from company.models import Company
+from recipesandingredients.models import IngredientCategories
 from .forms import RegistrationForm, LoginForm, UpdateEmailForm, UpdateContactInfoForm, ForgetPasswordForm, \
     UserSettingsForm, FeedBackForm, EmailForm, ForgetPassword
 
@@ -127,6 +128,30 @@ def create_user(request):
                 )
                 company_new.save()
                 request.session['company_name'] = first_name + ' ' + last_name + "'s Company"
+                IngredientCategories.objects.create(
+                    user=username,
+                    company_name=request.session['company_name'],
+                    category='Food',
+                    category_type='ingredient'
+                ).save()
+                IngredientCategories.objects.create(
+                    user=username,
+                    company_name=request.session['company_name'],
+                    category='Labor',
+                    category_type='ingredient'
+                ).save()
+                IngredientCategories.objects.create(
+                    user=username,
+                    company_name=request.session['company_name'],
+                    category='Packaging',
+                    category_type='ingredient'
+                ).save()
+                IngredientCategories.objects.create(
+                    user=username,
+                    company_name=request.session['company_name'],
+                    category='UnCategorized',
+                    category_type='ingredient'
+                ).save()
                 messages.success(request, _('Account created'))
                 return redirect('/dashboard')
     else:

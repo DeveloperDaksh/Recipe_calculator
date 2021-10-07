@@ -1,0 +1,20 @@
+{% extends 'storage_area_base_page.html' %}
+{% load i18n %}
+{% load crispy_forms_filters %}
+{% block content %}
+    <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                    <h3>Create Storage Area</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <button type="submit" class="btn btn-success">{% trans 'Update' %}</button>
+                    </form>
+                  </div>
+                <!-- /.form-group -->
+              </div>
+            </div>
+      </div>
+{% endblock %}

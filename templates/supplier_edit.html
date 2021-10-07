@@ -1,0 +1,14 @@
+{% extends 'each_supplier_base_page.html' %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form | crispy}}
+        <label>Delivery Days</label><br/>
+            {% for option in options %}
+                <input type="checkbox" name="delivery_days" value="{{ option }}" {% if option in supplier.delivery_days %}checked{% endif %}> {{ option }}<br/>
+            {% endfor %}
+        <button type="submit" class="btn btn-success">{% trans 'Update Supplier' %}</button>
+    </form>
+{% endblock %}

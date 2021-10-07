@@ -1,0 +1,23 @@
+{% extends 'each_customer_base_page.html' %}
+{% block content %}
+    <div class="content-wrapper">
+        <div>
+            <div>
+                <h3 class="card-title">{{ customer.name }}</h3>
+            </div><br/><br/>
+            <div class="panel panel-primary">
+              <div>
+                  <h3>Supplier Details</h3>
+              </div>
+              <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>Contact:</dt><dd>{% if customer.contact_first_name == '' and customer.contact_last_name == '' %}Not specified{% else %}{{ customer.contact_first_name }} {{ customer.contact_last_name }}{% endif %}</dd>
+                    <dt>Email:</dt><dd>{% if customer.email == '' %}Not specified{% else %}{{ customer.email }}{% endif %}</dd>
+                    <dt>Phone:</dt><dd>{% if customer.phone_number == '' %}Not specified{% else %}{{ customer.phone_number }}{% endif %}</dd>
+                </dl>
+
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

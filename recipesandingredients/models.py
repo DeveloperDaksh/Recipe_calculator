@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -146,7 +147,7 @@ class Ingredients(models.Model):
     caseQuantity = models.IntegerField()
     packSize = models.IntegerField()
     qtyUnits = models.CharField(max_length=225, choices=qtyUnits_Choices)
-    category = models.CharField(max_length=225, null=True, blank=True, choices=Category_Choices)
+    category = models.CharField(max_length=225, null=True, blank=True)
     suppliers = models.CharField(max_length=225, blank=True, null=True)
     orderCode = models.CharField(max_length=225, blank=True, null=True)
     brand = models.CharField(max_length=225, blank=True, null=True)
@@ -184,20 +185,53 @@ class IngredientData(models.Model):
         db_table = 'Ingredients_data'
 
 
-class RecipesModel(models.Model):
-    Category_Choices = [
-        ("Food", "Food"),
-        ("Labor", "Labor"),
-        ("Packaging", "Packaging"),
-        ("UnCategorized", "UnCategorized")
+class IngredientCategories(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    category = models.CharField(max_length=225)
+    category_type = models.CharField(max_length=225)
+
+
+class Suppliers(models.Model):
+    order_method_choices = [
+        ('Email', 'Email'),
+        ('Phone', 'Phone'),
+        ('Text', 'Text'),
+        ('Online Portal', 'Online Portal'),
+        ('Fax', 'Fax')
     ]
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    supplier_name = models.CharField(max_length=225)
+    order_email = models.EmailField(max_length=225, blank=True)
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+999999999'. Up to 15 digits "
+                                         "allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    sales_rep_first_name = models.CharField(max_length=225, blank=True)
+    sales_rep_last_name = models.CharField(max_length=225, blank=True)
+    sales_rep_email = models.EmailField(max_length=225, blank=True)
+    sales_rep_phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    preferred_order_method = models.CharField(max_length=225, blank=True, choices=order_method_choices)
+    delivery_days = models.CharField(max_length=225, blank=True)
+    note = models.TextField(blank=True)
+
+
+class RecipesModel(models.Model):
     company_name = models.CharField(max_length=225)
     recipe_user = models.CharField(max_length=225)
     recipe_name = models.CharField(max_length=225)
-    recipe_category = models.CharField(max_length=225, null=True, blank=True, choices=Category_Choices)
+    recipe_category = models.CharField(max_length=225, null=True, blank=True)
     recipe_yield_count = models.IntegerField()
     yield_units = models.CharField(max_length=225)
     other_ing_data = models.ManyToManyField(IngredientData)
 
     class Meta:
         db_table = 'recipe_table'
+
+
+class StorageAreas(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    name = models.CharField(max_length=225)
+    description = models.TextField(max_length=225,blank=True)

@@ -31,3 +31,29 @@ class Company(models.Model):
                                     validators=[MaxLengthValidator(5, message='accept length of 5')])
     thousands_separator = models.CharField(max_length=20, blank=True,
                                            validators=[MaxLengthValidator(5, message='accept length of 5')])
+
+
+class Customers(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    name = models.CharField(max_length=225)
+    contact_first_name = models.CharField(max_length=225, blank=True)
+    contact_last_name = models.CharField(max_length=225, blank=True)
+    email = models.EmailField(max_length=225, blank=True)
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+999999999'. Up to 15 digits "
+                                         "allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
+
+
+class ShippingCarriers(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    name = models.CharField(max_length=225)
+    contact_first_name = models.CharField(max_length=225, blank=True)
+    contact_last_name = models.CharField(max_length=225, blank=True)
+    email = models.EmailField(max_length=225, blank=True)
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+999999999'. Up to 15 digits "
+                                         "allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
