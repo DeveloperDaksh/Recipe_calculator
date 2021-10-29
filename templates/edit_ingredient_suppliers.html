@@ -1,0 +1,62 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% load i18n %}
+{% load division %}
+{% load get_dict_values %}
+{% block content %}
+    <div class="col-md-12">
+        <h3 class="h3-heading" id="page-heading">{{ ingredient.name }}</h3>
+    </div>
+    <div class="panel-body">
+        <div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Order Code</th>
+                <th>Brand</th>
+                <th>Purchase amount</th>
+                <th>Price</th>
+                <th>Price Per Unit</th>
+                <th>Preferred ?</th>
+                <th style="text-align: right;"><span id="filter-info"></span></th>
+              </tr>
+            </thead>
+
+              <tbody>
+                {% for ingredient_supplier in ingredient_suppliers %}
+                    <tr>
+                    <td>{{ ingredient_supplier.supplier }}</td>
+                    <td>{{ ingredient_supplier.order_code }}</td>
+                    <td>{{ ingredient_supplier.brand }}</td>
+                    <td>{{ ingredient_supplier.packSize }}/{{ ingredient_supplier.caseQuantity }} {{ qty_units | get_item:ingredient_supplier.qtyUnits }}</td>
+                    <td>${{ ingredient_supplier.price }}</td>
+                    <td>{{ ingredient_supplier.price | division:ingredient_supplier.caseQuantity | division:ingredient_supplier.packSize | floatformat:2 }}</td>
+                    <td>{% if ingredient_supplier.preferred %}<i class="fa fa-check" aria-hidden="true"></i>{% else %}
+                        <a href="/recipe/preferred/{{ ingredient.id }}/{{ ingredient_supplier.id }}">Set Preferred</a>
+                    {% endif %}</td>
+                    <td class="actions">
+                      <div class="btn-group btn-group-xs">
+                        <a class="btn btn-default" data-toggle="tooltip" data-original-title="Edit" data-remote="true" href="/recipe/edit_ingredient_supplier/edit/{{ ingredient.id }}/{{ ingredient_supplier.id }}"><i class="vmiddle fas fa-edit" aria-hidden="true"></i></a>
+                        <a data-confirm="Delete this Supplier Ingredient?" class="btn btn-default" data-toggle="tooltip" data-original-title="Delete" data-remote="true" rel="nofollow" data-method="delete" href="/recipe/edit_ingredient_supplier/delete/{{ ingredient.id }}/{{ ingredient_supplier.id }}"><i class="vmiddle fas fa-trash" aria-hidden="true"></i></a>
+                      </div>
+                    </td>
+                </tr>
+                {% endfor %}
+          </tbody>
+          </table>
+            <br/><br/>
+            {% if form %}
+                <form method="post">
+                {% csrf_token %}
+                {{ form | crispy}}
+                <button type="submit" class="btn btn-success">{% trans 'Update Supplier Ingredient' %}</button><br/>
+            </form>
+                <br/>
+                    <a href="/recipe/edit_ingredient_suppliers/{{ ingredient.id }}"><button type="button" class="btn btn-success">{% trans 'Cancel' %}</button></a>
+            <br/><br/>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

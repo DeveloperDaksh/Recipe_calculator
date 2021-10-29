@@ -56,7 +56,8 @@ $(function (){
                         '<tr>'+
                           '<td class="ptm">'+
                             '<p>'+response.foods[i].description+'</p>'+
-                        '<strong>Data Type:</strong> '+"<span>"+response.foods[i].dataType+"</span>"+
+                        '<strong>Data Type:</strong> '+"<span>"+response.foods[i].dataType+"</span>" +
+                        "<b style='display: none'>"+response.foods[i].fdcId+"</b>"+
                           '</td>'+
                           '<td>'+
                             '<button class="btn choose_food" >Choose</button>'+
@@ -69,6 +70,8 @@ $(function (){
                 console.log($(this).closest('tr').find('.ptm p').text())
                 const selected_food = $(this).closest('tr').find('.ptm p').text()
                 const selected_datatype = $(this).closest('tr').find('.ptm span').text()
+                const fdcId = $(this).closest('tr').find('.ptm b').text()
+                console.log(fdcId)
                 const data = {'selected_food':selected_food}
                 $.ajaxSetup({
                     headers : {"X-CSRFToken":getCookie('csrftoken')},
@@ -78,6 +81,7 @@ $(function (){
                     document.getElementById("nutrient_database_search_results").innerHTML = null
                     $("#cached_usda_item_name").val(selected_food + '   Data Type:'+selected_datatype)
                     $("#nutri-data-link-value").val(selected_food)
+                    $("#nutri-data-fdcid").val(fdcId)
                     $("#cached_usda_item_name").attr("readonly","")
                     $("#clear_food").css("display","none")
                     $("#reset_food").css("display","block")
@@ -97,14 +101,14 @@ $(function (){
                             "<div class='mb10'>"+
                                 result.measurement_units[i][0] +"<b>≈</b>"+ result.measurement_units[i][1]+
                                 "<input type='hidden' name='units-hidden' value='"+result.measurement_units[i][2]+"'>"+
-                                "<button id='add-measurment' type='button'><i class=\"fa fa-plus\" aria-hidden=\"true\"></i></button>"+
+                                "<button class='add-measurment-button-nutri' type='button'><i class=\"fa fa-plus\" aria-hidden=\"true\"></i></button>"+
                             "</div>"
                         );
                         div.append(unitsdiv)
                     }
                     $("#conversion_help").append(div)
 
-                    $("#add-measurment").bind('click',function (){
+                    $(".add-measurment-button-nutri").bind('click',function (){
                         console.log($(this).closest("div").text().split("≈"))
                         console.log($(this).closest("div").find('input[type=hidden]').val())
                         var fromto = $(this).closest("div").text().split("≈")
@@ -185,12 +189,14 @@ $(function (){
                         $("#cached_usda_item_name").removeAttr("readonly")
                         delete $.ajaxSettings.headers["X-CSRFToken"]
                         document.getElementById("display-units-msg").innerText = ''
-                        document.getElementById('display-units-block').innerHTML = ''
+                        document.getElementById('display-units-block').innerText = ''
                         document.getElementById('display-selected-nutrition').innerText = ''
                         $("#display-selected-nutrition").css({'display':'none'})
                         $("#nutri-link-btn").css({'display':'block'})
                         $("#nutri-link-btn-change").css({'display':'none'})
                         $("#nutri-data-link-value").val('')
+                        $("#nutri-data-fdcid").val('')
+                        $("#conversion_help").css({'display':'none'})
                     });
                 })
             });

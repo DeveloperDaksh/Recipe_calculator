@@ -8,6 +8,15 @@ $(document).ready(function (){
             $("#customsupplierid").attr("type","hidden")
         }
     })
+    $("#id_category").change(function (){
+        if($("#id_category").val()==='Add Category'){
+            console.log("Add Input")
+            $("#customcategoryid").attr("type","text")
+        }
+        else {
+            $("#customcategoryid").attr("type","hidden")
+        }
+    })
     $("#id_hasMajorAllergens").change(function (){
         if($("#id_hasMajorAllergens").val()==='true'){
             console.log("True")

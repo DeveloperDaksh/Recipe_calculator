@@ -1,99 +1,146 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-    {% load static %}
-    {% load i18n %}
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.css">
-  <link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
 
-  <title>{% block title %}Recipe Cost Calculator{% endblock %}</title>
-  {% block stylesheet %}
-  {% endblock %}
-</head>
+
+<!-- Mirrored from cube.webuildthemes.com/saas.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 14 Aug 2021 07:54:27 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    {% load static %}
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YWB4ECCWW"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+
+      gtag('config', 'G-6YWB4ECCWW');
+  </script>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Favicon -->
+  <!-- <link rel="shortcut icon" href="./assets/images/favicon.ico" type="image/x-icon" /> -->
+
+  <!-- Libs CSS -->
+  <link rel="stylesheet" href="{% static 'assets/css/libs.bundle.css' %}" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{% static 'assets/css/index.bundle.css' %}" />
+
+  <!-- Title -->
+  <title>Saas</title></head>
+
 <body>
-{% block body %}
-  <nav class="navbar navbar-expand-lg navbar-light py-3 mb-3 shadow-sm" style="background-color:#fff;">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu"
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="mainMenu" style="padding-left: 800px">
-        <div class="navbar-nav mr-auto">
-            <a class="nav-item nav-link{% if menu == 'sampledemo' %} active{% endif %}" href="/">
-                {% trans 'Home' %}
-                {% if menu == 'index' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-            <a class="nav-item nav-link{% if menu == 'login' %} active{% endif %}" href="/login">
-                {% trans 'Login' %}
-                {% if menu == 'login' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-            <a class="nav-item nav-link{% if menu == 'create' %} active{% endif %}"
-               href="/register">
-              {% trans 'Create Account' %}
-              {% if menu == 'create' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-            <a class="nav-item nav-link{% if menu == 'about' %} active{% endif %}"
-               href="/about">
-              {% trans 'About' %}
-              {% if menu == 'about' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-            <a class="nav-item nav-link{% if menu == 'contact' %} active{% endif %}"
-               href="/contact">
-              {% trans 'Contact' %}
-              {% if menu == 'contact' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-            <a class="nav-item nav-link{% if menu == 'help' %} active{% endif %}"
-               href="/help">
-              {% trans 'Help' %}
-              {% if menu == 'help' %}<span class="sr-only">{% trans '(current)' %}</span>{% endif %}
-            </a>
-        </div>
+
+  {% block body %}
+  <!-- navbar -->
+  <nav id="mainNav" class="navbar navbar-expand-lg navbar-sticky navbar-light">
+    <div class="container">
+      <a href="/" class="navbar-brand"><img src="{% static 'assets/images/logo/logo-dark.svg' %}" alt="Logo"></a>
+
+      <!-- secondary -->
+      <ul class="navbar-nav navbar-nav-secondary order-lg-3">
+        <li class="nav-item d-lg-none">
+          <a class="nav-link nav-icon" href="#" role="button" data-bs-toggle="collapse" data-bs-target="#navbar"
+            aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="bi bi-list"></span>
+          </a>
+        </li>
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link" href="/login" id="navbarDropdown-5">
+              Login
+          </a>
+        </li>
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link" href="/register" id="navbarDropdown-6">
+              Register
+          </a>
+        </li>
+      </ul>
+
+      <!-- primary -->
+      <div class="collapse navbar-collapse" id="navbar" data-bs-parent="#mainNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/" id="navbarDropdown-1">
+                  Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about" id="navbarDropdown-2">
+                  About
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/contact" id="navbarDropdown-3">
+                  Contact
+                </a>
+            </li>
+        </ul>
+      </div>
     </div>
   </nav>
-  {% block main %}
+  {% block content %}
+
+  {% endblock %}
+  <!-- footer -->
+  <footer class="py-15 py-xl-20 border-top">
     <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-10">
-          {% block content %}
-          {% endblock %}
+      <div class="row justify-content-between g-5 mb-5 mb-lg-10">
+        <div class="col-lg-4">
+          <a href="index-2.html" class="navbar-brand"><img src="{% static 'assets/images/logo/logo-dark.svg' %}" alt="Logo"></a>
+          <p class="mt-2 text-muted pe-lg-5">Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+        </div>
+        <div class="col-lg-7">
+          <div class="row g-3 g-xl-5">
+            <div class="col-6 col-md-4">
+              <span class="eyebrow text-muted mb-1 d-flex">Menu</span>
+              <ul class="list-unstyled">
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">documentation</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">components</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">blocks</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">changelog</a></li>
+                <li><a href="#" class="text-reset text-primary-hover">roadmap</a></li>
+              </ul>
+            </div>
+            <div class="col-6 col-md-4">
+              <span class="eyebrow text-muted mb-1 d-flex">Follow us</span>
+              <ul class="list-unstyled">
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Instagram</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Facebook</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Twitter</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Linkedin</a></li>
+                <li><a href="#" class="text-reset text-primary-hover">Youtube</a></li>
+              </ul>
+            </div>
+            <div class="col-6 col-md-4">
+              <span class="eyebrow text-muted mb-1 d-flex">Docs</span>
+              <ul class="list-unstyled">
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Get Started</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Components</a></li>
+                <li class="mb-1"><a href="#" class="text-reset text-primary-hover">Changelog</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row align-items-center justify-content-between g-2 g-lg-5">
+        <div class="col-md-6 col-lg-4 order-md-2 text-md-end">
+          <span class="small text-muted">5th Avenue, New York USA 10255</span>
+        </div>
+        <div class="col-md-6 col-lg-3 order-md-1">
+          <p class="small text-muted">Copyrights © 2021</p>
         </div>
       </div>
     </div>
-  {% endblock main %}
+  </footer>
 {% endblock body %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
-<script>
-  $(function () {
-    feather.replace();
-    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
-      icons: {
-        time: 'far fa-clock',
-        date: 'far fa-calendar',
-        up: 'fa fa-arrow-up',
-        down: 'fa fa-arrow-down',
-        previous: 'fa fa-chevron-left',
-        next: 'fa fa-chevron-right',
-        today: 'far fa-calendar-check-o',
-        clear: 'far fa-trash',
-        close: 'far fa-times'
-      }
-    });
-    $(".datetimeinput").datetimepicker({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    });
-  });
-</script>
-{% block javascript %}
-{% endblock %}
 </body>
+  <!-- javascript -->
+  <script src="{% static 'assets/js/vendor.bundle.js' %}"></script>
+  <script src="{% static 'assets/js/index.bundle.js' %}"></script></body>
+
+
+<!-- Mirrored from cube.webuildthemes.com/saas.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 14 Aug 2021 07:54:30 GMT -->
 </html>

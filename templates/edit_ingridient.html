@@ -1,4 +1,9 @@
 {% extends 'each_ingridient_base_page.html' %}
+{% load static %}
+{% load i18n %}
+{% block script %}
+    <script src="{% static 'js/update_nutritions.js' %}"></script>
+{% endblock %}
 {% block content %}
       <div class="modal-content" id="nut-loading" style="display: none">
           <div class="modal-header">
@@ -41,6 +46,8 @@
       {{ form.category.errors }}
       {{ form.category.label_tag }}
       {{ form.category}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="hidden" name="customcategory" placeholder="Enter Category" id="customcategoryid">
+        <br/><br/>
       {{ form.orderCode.errors }}
       {{ form.orderCode.label_tag }}
       {{ form.orderCode}}<br/><br/>
@@ -135,12 +142,15 @@
                 <div class="form-group measurement-converters measurement-converters-JS">
           <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
         <br/>
+        <p id="display-units-measurment-err" style="color: crimson"></p>
+        <br/>
         <p id="display-units-msg"></p>
         <br/>
         <div id="conversion_help" style="display: none">
 
         </div>
         <input type="hidden" name="nutri-data-link-value" value="{{ ingredient.nutriationData }}" id="nutri-data-link-value">
+        <input type="hidden" name="nutri-data-fdcid" value="{{ ingredient.fdcId }}" id="nutri-data-fdcid">
         <br/>
 
 

@@ -9,7 +9,8 @@ from wsgiref.util import FileWrapper
 
 from .models import Company, Customers, ShippingCarriers
 from recipeapp.models import UserModel
-from recipesandingredients.models import Ingredients, RecipesModel,IngredientCategories
+from recipesandingredients.models import Ingredients, RecipesModel, IngredientCategories, NutritionDetails, \
+    StorageAreas, Suppliers
 from .forms import CompanyForm, CompanySettings, CurrencyDisplay, BillingCountry, DeleteForm, CustomerForm, \
     ShippingCarrierForm
 
@@ -260,6 +261,12 @@ def company_settings(request):
                     recipe_info = RecipesModel.objects.filter(recipe_user=request.user, company_name=company_name)
                     ingredients_info.delete()
                     recipe_info.delete()
+                    Customers.objects.filter(user=request.user.username, company_name=company_name).delete()
+                    ShippingCarriers.objects.filter(user=request.user.username, company_name=company_name).delete()
+                    IngredientCategories.objects.filter(user=request.user.username, company_name=company_name).delete()
+                    NutritionDetails.objects.filter(user=request.user.username, company_name=company_name).delete()
+                    StorageAreas.objects.filter(user=request.user.username, company_name=company_name).delete()
+                    Suppliers.objects.filter(user=request.user.username,company_name=company_name).delete()
                     return render(
                         request,
                         'company_settings.html',
@@ -728,7 +735,8 @@ def download_shipping_carriers(request):
     fields = ['Name', 'First Name', 'Last Name', 'Email', 'Phone Number']
     data = []
     for shipping_carrier in shipping_carriers:
-        data.append([shipping_carrier.name, shipping_carrier.contact_first_name, shipping_carrier.contact_last_name, shipping_carrier.email,
+        data.append([shipping_carrier.name, shipping_carrier.contact_first_name, shipping_carrier.contact_last_name,
+                     shipping_carrier.email,
                      shipping_carrier.phone_number])
     file = io.StringIO()
     writer = csv.writer(file, delimiter=',')

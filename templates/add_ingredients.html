@@ -59,7 +59,7 @@
               <li style="background-color: #abdde5">Raw Materials</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
-              <li><a href="#" class="dropdown-item">Storage Areas</a></li>
+              <li><a href="{% url 'create_storage' %}" class="dropdown-item">Storage Areas</a></li>
               <li style="background-color: #abdde5">Finished Goods</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
@@ -218,6 +218,8 @@
                   {{ form.category.errors }}
                   {{ form.category.label_tag }}
                   {{ form.category}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <input type="hidden" name="customcategory" placeholder="Enter Category" id="customcategoryid">
+                  <br/><br/>
                   {{ form.orderCode.errors }}
                   {{ form.orderCode.label_tag }}
                   {{ form.orderCode}}<br/><br/>
@@ -311,7 +313,8 @@
                             <div class="ingredient-form-checked-measurements-summary-JS"></div>
                             <div class="form-group measurement-converters measurement-converters-JS">
                       <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
-
+                    <br/>
+                    <p id="display-units-measurment-err" style="color: crimson"></p>
                     <br/>
                     <p id="display-units-msg"></p>
 
@@ -320,6 +323,7 @@
 
                     </div>
                     <input type="hidden" name="nutri-data-link-value" value="" id="nutri-data-link-value">
+                    <input type="hidden" name="nutri-data-fdcid" value="" id="nutri-data-fdcid">
                     <br/>
                     <input id="btnAdd" type="button" value="Add New Measurements" />
                     <br /><br/>
@@ -385,7 +389,7 @@
 
                         </div>
                   <br/>
-                  <input type="submit" value="Save Changes" class="btn btn-success">
+                  <input type="submit" value="Create Ingredient" class="btn btn-success">
                   <br/>
               </form>
               <br/><br/>

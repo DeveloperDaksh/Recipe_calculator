@@ -102,7 +102,7 @@
               <li style="background-color: #abdde5">Raw Materials</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
-              <li><a href="#" class="dropdown-item">Storage Areas</a></li>
+              <li><a href="{% url 'create_storage' %}" class="dropdown-item">Storage Areas</a></li>
               <li style="background-color: #abdde5">Finished Goods</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
@@ -273,10 +273,9 @@
                 <div class="form-group">
                   <label>Filter By Category</label>
                   <select id="recipe-filter-category" class="form-control select2bs4" style="width: 100%;">
-                    <option value="Food">Food</option>
-                    <option value="Labour">Labor</option>
-                    <option value="Packaging">Packaging</option>
-                      <option value="UnCategorized">UnCategorized</option>
+                    {% for recipe_category in recipe_categories %}
+                        <option value="{{ recipe_category.category }}">{{ recipe_category.category }}</option>
+                    {% endfor %}
                   </select>
                 </div>
               </div>
@@ -297,8 +296,8 @@
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Purchase Amount</th>
-                        <th>Category</th>
+                      <th>Yield</th>
+                        <th style="display: none">Category</th>
                         <th>Actions</th>
                     </tr>
                   </thead>
@@ -311,7 +310,7 @@
                             <td>
                                 {{ recipie.recipe_yield_count }} {{ recipie.yield_units }}
                             </td>
-                            <td>
+                            <td style="display: none">
                                 {{ recipie.recipe_category }}
                             </td>
                             <td>

@@ -1,6 +1,7 @@
 $(function (){
    console.log($("#nutri-data-link-value").val())
    var selected_food = $("#nutri-data-link-value").val()
+    const fcdId = $("#nutri-data-fdcid").val()
    const data = {'selected_food':selected_food}
    if($("#nutri-data-link-value").val()!==''){
       $.ajaxSetup({
@@ -8,7 +9,7 @@ $(function (){
     })
     $.post('/recipe/handle_measurements',data,function (result){
         console.log(result)
-        document.getElementById("nutrient_database_search_results").innerHTML = null
+        document.getElementById("nutrient_database_search_results").innerHTML = ''
         $("#cached_usda_item_name").val(selected_food)
         $("#nutri-data-link-value").val(selected_food)
         $("#cached_usda_item_name").attr("readonly","")
@@ -122,6 +123,7 @@ $(function (){
             $("#nutri-link-btn").css({'display':'block'})
             $("#nutri-link-btn-change").css({'display':'none'})
             $("#nutri-data-link-value").val('')
+            $("#nutri-data-fdcid").val('')
             document.getElementById('display-selected-nutrition').innerText = ''
             $("#display-selected-nutrition").css({'display':'none'})
         });

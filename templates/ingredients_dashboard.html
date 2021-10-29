@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% load get_dict_values %}
+    {% load division %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recipe Cost Calculator</title>
@@ -108,7 +110,7 @@
               <li style="background-color: #abdde5">Raw Materials</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
-              <li><a href="#" class="dropdown-item">Storage Areas</a></li>
+              <li><a href="{% url 'create_storage' %}" class="dropdown-item">Storage Areas</a></li>
               <li style="background-color: #abdde5">Finished Goods</li>
               <li><a href="#" class="dropdown-item">Inventory</a></li>
               <li><a href="#" class="dropdown-item">Lot Codes </a></li>
@@ -228,10 +230,6 @@
                 <a href="/recipe/download"><i class="fa fa-download" aria-hidden="true"></i> Download Ingredients</a>
               </li>
                 <br/>
-                <li class="nav-item">
-                <a href="#"><i class="fa fa-upload" aria-hidden="true"></i> Upload Ingredients</a>
-              </li>
-                <br/>
               <li class="nav-item">
                 <a class="venobox vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/428390348"><i class="fa fa-video-camera" aria-hidden="true"></i> Watch Introduction Video</a>
               </li>
@@ -283,10 +281,9 @@
                 <div class="form-group">
                   <label>Filter By Category</label>
                   <select id="ingrident-filter-category" class="form-control select2bs4" style="width: 100%;">
-                    <option value="Food">Food</option>
-                    <option value="Labor">Labor</option>
-                    <option value="Packaging">Packaging</option>
-                      <option value="UnCategorized">UnCategorized</option>
+                    {% for each_category in ingredient_categories %}
+                        <option value="{{ each_category.category }}">{{ each_category.category }}</option>
+                    {% endfor %}
                   </select>
                 </div>
               </div>
@@ -309,7 +306,8 @@
                       <th>Name</th>
                       <th>Purchase Amount</th>
                       <th>Price</th>
-                        <th>Category</th>
+                        <th>Price/unit</th>
+                        <th style="display: none">Category</th>
                         <th>Actions</th>
                     </tr>
                   </thead>
@@ -320,12 +318,15 @@
                                 <a href="/recipe/ingridientdetails/{{ ingrideient.id }}">{{ ingrideient.name }}</a>
                             </td>
                             <td>
+                                {{ ingrideient.caseQuantity }}/{{ ingrideient.packSize }} {{ qty_units | get_item:ingrideient.qtyUnits }}
+                            </td>
+                              <td>
                                 {{ ingrideient.price }}
                             </td>
-                            <td>
-                                {{ ingrideient.caseQuantity }}/{{ ingrideient.packSize }}
-                            </td>
-                            <td id="ingrident-category-item">
+                              <td>
+                                  {{ ingrideient.price | division:ingrideient.caseQuantity | division:ingrideient.packSize | floatformat:2 }}
+                              </td>
+                            <td id="ingrident-category-item" style="display: none">
                                 {{ ingrideient.category }}
                             </td>
                             <td>

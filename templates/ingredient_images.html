@@ -1,0 +1,57 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load static %}
+{% block content %}
+    <div class="col-lg-12">
+    <div class="panel panel-primary ">
+  <div class="panel-heading">
+    Upload Images
+  </div>
+  <div class="panel-body" style="padding-top: 30px">
+
+    <form class="new_attachment" id="new_attachment" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+      <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-6">
+          <label class="dropimage" for="attachment_image">
+              <img src="{% static 'cameralogo.jpg' %}" alt="Upload Ingredient Image" width="400px" height="400px" id="img-ing">
+          </label>
+            <input title="Drop image or click me" type="file" style="display: none" name="ingredient_image" id="attachment_image" accept="image/*">
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-6">
+          <input type="submit" name="back-to-dashboard" value="Upload and go back to ingredient" class="btn btn-default">
+          <input type="submit" name="back-to-ingredients" value="Upload and continue uploading" class="btn btn-default">
+        </div>
+      </div>
+    </form>
+
+    <div class="col-lg-12">
+    <div class="panel panel-primary ">
+  <div class="panel-heading">
+    Images
+  </div>
+  <div class="panel-body">
+
+
+      <div class="row row-eq-height">
+          {% for each_image in ingredient_images %}
+              <div class="col-sm-4">
+              <div class="thumbnail">
+                <img class="img-responsive" src="/recipe/media/{{ each_image.ingredient_image }}" style="width: 300px;height: 300px">
+                  <br/>
+                <div class="caption">
+                  <a href="/recipe/deleteimage/{{ each_image.id }}"><input type="button" value="delete" style="width: 300px;"></a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+  </div>
+
+
+
+  </div>
+</div>  </div>
+
+
+  </div>
+</div>  </div>
+{% endblock %}

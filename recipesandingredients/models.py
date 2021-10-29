@@ -1,6 +1,15 @@
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django_quill.fields import QuillField
+
+
+class IngredientImages(models.Model):
+    ingredient_image = models.ImageField(upload_to='ingredientimages', blank=True)
+
+
+class RecipeImages(models.Model):
+    recipe_image = models.ImageField(upload_to='recipeimages', blank=True)
 
 
 class Ingredients(models.Model):
@@ -156,6 +165,7 @@ class Ingredients(models.Model):
     parLevel = models.IntegerField(null=True, blank=True)
     parUnits = models.CharField(max_length=225, null=True, blank=True, choices=qtyUnits_Choices)
     nutriationData = models.CharField(max_length=225, null=True, blank=True)
+    fdcId = models.CharField(max_length=225, null=True, blank=True)
     fromMeasurementData = ArrayField(models.FloatField(), null=True, blank=True)
     fromMeasurementUnits = ArrayField(models.CharField(max_length=225), null=True, blank=True)
     toMeasurementData = ArrayField(models.FloatField(), null=True, blank=True)
@@ -167,6 +177,7 @@ class Ingredients(models.Model):
     displayUnits = models.CharField(max_length=225, null=True, blank=True)
     displayName = models.CharField(max_length=225, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
+    ingredient_images = models.ManyToManyField(IngredientImages, blank=True)
 
     def __str__(self):
         return self.name
@@ -225,6 +236,8 @@ class RecipesModel(models.Model):
     recipe_yield_count = models.IntegerField()
     yield_units = models.CharField(max_length=225)
     other_ing_data = models.ManyToManyField(IngredientData)
+    preparation_instructions = QuillField(blank=True)
+    recipe_images = models.ManyToManyField(RecipeImages, blank=True)
 
     class Meta:
         db_table = 'recipe_table'
@@ -234,4 +247,43 @@ class StorageAreas(models.Model):
     user = models.CharField(max_length=225)
     company_name = models.CharField(max_length=225)
     name = models.CharField(max_length=225)
-    description = models.TextField(max_length=225,blank=True)
+    description = models.TextField(max_length=225, blank=True)
+
+
+class NutritionDetails(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    ingredient = models.CharField(max_length=225)
+    weight_validation = RegexValidator(regex=r'\d{1,9}(kg|lb)',
+                                       message='exmaple of valid weight be 240g or 240kg or 240lb')
+    range_validator = MinValueValidator(limit_value=0, message='Must be greater than or equal to 0')
+    weight = models.CharField(validators=[weight_validation], max_length=225)
+    calories = models.FloatField(validators=[range_validator])
+    total_fat = models.FloatField(validators=[range_validator])
+    saturated_fat = models.FloatField(validators=[range_validator])
+    trans_fat = models.FloatField(validators=[range_validator])
+    cholesterol = models.FloatField(validators=[range_validator])
+    sodium = models.FloatField(validators=[range_validator])
+    total_carbohydrates = models.FloatField(validators=[range_validator])
+    dietary_fiber = models.FloatField(validators=[range_validator])
+    sugar = models.FloatField(validators=[range_validator])
+    protein = models.FloatField(validators=[range_validator])
+    vitamin_a = models.FloatField(validators=[range_validator])
+    vitamin_c = models.FloatField(validators=[range_validator])
+    calcium = models.FloatField(validators=[range_validator])
+    iron = models.FloatField(validators=[range_validator])
+    vitamin_d = models.FloatField(validators=[range_validator])
+    potassium = models.FloatField(validators=[range_validator])
+
+
+class IngredientSuppliers(models.Model):
+    ingredient_relation = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
+    supplier = models.CharField(max_length=225)
+    price = models.FloatField()
+    caseQuantity = models.IntegerField()
+    packSize = models.IntegerField()
+    qtyUnits = models.CharField(max_length=225, choices=Ingredients.qtyUnits_Choices)
+    order_code = models.CharField(max_length=225, blank=True, null=True)
+    brand = models.CharField(max_length=225, blank=True, null=True)
+    country_of_origin = models.CharField(max_length=225, choices=Ingredients.Country_Of_Origin, blank=True, null=True)
+    preferred = models.BooleanField(default=False)

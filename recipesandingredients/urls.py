@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
@@ -24,5 +26,22 @@ urlpatterns = [
     path('delete-cat/<int:cat_id>', views.delete_category),
     path('handle_measurements', views.handle_measurement),
     path('storagearea/new', views.crate_storage_area, name='create_storage'),
-    path('storagearea/edit/<int:storage_area_id>', views.edit_storage_area)
+    path('storagearea/edit/<int:storage_area_id>', views.edit_storage_area),
+    path('uploadimage/<int:ing_id>', views.ingredient_images),
+    path('deleteimage/<int:img_id>', views.delete_ingredient_image),
+    path('replaceingredients/<int:ing_id>', views.replace_ingredient),
+    path('confirm_replace/<int:from_id>/<int:to_id>', views.confirm_replace),
+    path('edit_nutrition_details/<int:ing_id>', views.edit_nutrition_details),
+    path('preparation/<int:recipe_id>', views.recipe_preparation_instructions),
+    path('ingridientdetails/addsupplier/<int:ing_id>', views.add_ingredient_supplier),
+    path('edit_ingredient_suppliers/<int:ing_id>', views.edit_ingredient_suppliers),
+    path('edit_ingredient_supplier/edit/<int:ing_id>/<int:ing_supplier_id>', views.edit_each_ingredient_supplier),
+    path('edit_ingredient_supplier/delete/<int:ing_id>/<int:ing_supplier_id>', views.delete_each_ingredient_supplier),
+    path('preferred/<int:ing_id>/<int:ing_supplier_id>', views.set_preferred_ingredient_supplier),
+    path('allergens/<int:rec_id>', views.allergen_recipes),
+    path('images/<int:rec_id>', views.recipe_images),
+    path('deleterecipeimage/<int:img_id>', views.delete_recipe_image)
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

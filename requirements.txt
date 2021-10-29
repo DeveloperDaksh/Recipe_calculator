@@ -10,3 +10,5 @@ pillow==8.0.1
 asgiref==3.4.1
 sendgrid==6.8.1
 djangorestframework==3.12.4
+django-quill-editor==0.1.22
+openpyxl==3.0.9
