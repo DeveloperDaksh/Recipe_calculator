@@ -1,6 +1,8 @@
+import datetime
+
 from django import forms
 from .models import Ingredients, RecipesModel, IngredientCategories, Suppliers, StorageAreas, NutritionDetails, \
-    IngredientSuppliers
+    IngredientSuppliers, ProductionPlanTemplate, ProductionPlan
 
 
 class IngredientsForm(forms.ModelForm):
@@ -187,4 +189,20 @@ class UpdateIngredientSupplierForm(forms.ModelForm):
     class Meta:
         model = IngredientSuppliers
         exclude = ('ingredient_relation', 'preferred')
+        fields = '__all__'
+
+
+class ProductionPlanTemplateForm(forms.ModelForm):
+    class Meta:
+        model = ProductionPlanTemplate
+        exclude = ('user', 'company_name')
+        fields = '__all__'
+
+
+class ProductionPlanForm(forms.ModelForm):
+    date_field = forms.DateField(initial=datetime.date.today)
+
+    class Meta:
+        model = ProductionPlan
+        exclude = ('user', 'company_name', 'recipes')
         fields = '__all__'

@@ -63,7 +63,7 @@
           </ul>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Planning</a>
+            <a href="{% url 'production_plan' %}" class="nav-link">Planning</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="#" class="nav-link">Contact</a>
@@ -169,6 +169,10 @@
                 <br/>
                 <li class="nav-item">
                     <a href="/recipe/images/{{ recipe.id }}"><i class="fa fa-picture-o" aria-hidden="true"></i> Images</a>
+                </li>
+                <br/>
+                <li class="nav-item">
+                    <a href="/recipe/copy/{{ recipe.id }}"><i class="fas fa-copy"></i> Copy Recipe</a>
                 </li>
                 <br/>
                 <li class="nav-item">

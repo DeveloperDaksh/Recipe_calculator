@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -287,3 +289,24 @@ class IngredientSuppliers(models.Model):
     brand = models.CharField(max_length=225, blank=True, null=True)
     country_of_origin = models.CharField(max_length=225, choices=Ingredients.Country_Of_Origin, blank=True, null=True)
     preferred = models.BooleanField(default=False)
+
+
+class ProductionPlanTemplate(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    production_plan_template = QuillField()
+
+
+class Recipes(models.Model):
+    recipe_name = models.CharField(max_length=225)
+    target_yield = models.IntegerField()
+    category_batch = models.CharField(max_length=225)
+
+
+class ProductionPlan(models.Model):
+    user = models.CharField(max_length=225)
+    company_name = models.CharField(max_length=225)
+    date_field = models.DateField()
+    description = models.TextField(blank=True)
+    notes = QuillField(blank=True)
+    recipes = models.ManyToManyField(Recipes, blank=True)

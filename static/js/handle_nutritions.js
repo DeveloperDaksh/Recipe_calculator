@@ -72,7 +72,7 @@ $(function (){
                 const selected_datatype = $(this).closest('tr').find('.ptm span').text()
                 const fdcId = $(this).closest('tr').find('.ptm b').text()
                 console.log(fdcId)
-                const data = {'selected_food':selected_food}
+                const data = {'selected_food':selected_food,'fdcId': fdcId}
                 $.ajaxSetup({
                     headers : {"X-CSRFToken":getCookie('csrftoken')},
                 })

@@ -40,7 +40,16 @@ urlpatterns = [
     path('preferred/<int:ing_id>/<int:ing_supplier_id>', views.set_preferred_ingredient_supplier),
     path('allergens/<int:rec_id>', views.allergen_recipes),
     path('images/<int:rec_id>', views.recipe_images),
-    path('deleterecipeimage/<int:img_id>', views.delete_recipe_image)
+    path('deleterecipeimage/<int:img_id>', views.delete_recipe_image),
+    path('productionplan', views.production_plan_dashboard, name='production_plan'),
+    path('productionplantemplate', views.productionplantemplate, name='productionplantemplete'),
+    path('newplan', views.new_production_plan, name='new_production_plan'),
+    path('getrecipedetails', views.get_recipe_details),
+    path('getrecipesfromcategory', views.get_recipes_from_category),
+    path('editplan/<int:plan_id>', views.edit_production_plan),
+    path('deleteplan/<int:plan_id>', views.delete_production_plan),
+    path('plandetails/<int:plan_id>', views.each_plan_details),
+    path('copy/<int:rec_id>', views.copy_recipe)
 ]
 
 if settings.DEBUG:

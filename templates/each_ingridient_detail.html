@@ -84,6 +84,30 @@
         </div>
       </div>
     </div>
+    <div class="panel panel-primary ">
+      <div class="panel-heading">
+        Measurement Converters
+      </div>
+      <div class="panel-body">
+          {% if ingredient.fromMeasurementData == '[]' %}
+              <div class="row">
+                  <div class="col-sm-12">
+                    <p>No Measurements Data</p>
+                  </div>
+              </div>
+          {% else %}
+              {% for from_data,from_unit,to_data,to_unit in ingredient_measurments %}
+                  <div class="row">
+                      <div class="col-sm-12">
+                        {{ from_data }} {{ qty_units | get_item:from_unit }}
+                        <i class="fas fa-arrows-alt-h"></i>
+                        {{ to_data }} {{ qty_units | get_item:to_unit }}
+                      </div>
+                  </div>
+              {% endfor %}
+          {% endif %}
+      </div>
+    </div>
     <br/><br/>
     <div class="row">
       <div class="col-lg-6">

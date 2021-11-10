@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     {% load static %}
-    {% load i18n %}
+    {% load get_dict_values %}
+    {% load division %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recipe Cost Calculator</title>
@@ -11,10 +12,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Font Awesome Icons -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/ingridents_filter.js' %}"></script>
     <script src="{% static 'js/company_options.js' %}"></script>
     <style>
         .list-group-item:first-child {
@@ -43,10 +45,35 @@
             font-weight: bold;
             color: #eee;
         }
+        .page-header {
+            margin: 0 0 10px 0;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 10px;
+            margin-left: 0px;
+            padding-right: 15px;
+            padding-left: 40px;
+        }
+        .row {
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .panel-primary {
+            border-color: #2866AA;
+        }
+        .panel {
+            border: none;
+            border-top: 3px solid #212121;
+            border-radius: 3px;
+            box-shadow: 0 1px 1px rgb(0 0 0.1);
+        }
+        panel-body {
+            padding: 15px;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
-{% block body %}
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -56,14 +83,14 @@
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="/dashboard" class="nav-link">Home</a>
-      </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/dashboard" class="nav-link">Home</a>
+        </li>
         <li class="nav-item d-none d-sm-inline-block">
             <a href="/recipe/page" class="nav-link">Ingredients</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Recipies</a>
+            <a href="/recipe/recipelist" class="nav-link">Recipies</a>
         </li>
         <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
@@ -97,7 +124,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <li class="dropdown user-nav" id="profile-button">
-	<button class="dropdown-toggle" id="expand-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	  <i class="fa fa-user" aria-hidden="true"></i>
 	  <span class="caret caret-light"></span>
 	</button>
@@ -167,30 +194,40 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">{{ username }}</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
       <nav class="mt-2">
-          <br/><br/>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item menu-open">
-            <a href="/personalinfo/edit"><i class="fa fa-map-marker" aria-hidden="true"></i> Contact Info</a>
+            <a href="{% url 'production_plan' %}"><i class="fa fa-table" aria-hidden="true"></i> List Production Plans</a>
               <br/><br/>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/personalinfo/change_password"><i class="fa fa-key" aria-hidden="true"></i> Password</a>
+                <a href="{% url 'new_production_plan' %}"><i class="fa fa-plus" aria-hidden="true"></i> New Production Plan</a>
+              </li>
+              <br/>
+              <li class="nav-item">
+                <a href="{% url 'productionplantemplete' %}"><i class="fas fa-copy"></i> Production Plan Template</a>
               </li>
                 <br/>
               <li class="nav-item">
-                <a href="/personalinfo/change_email"><i class="fa fa-envelope" aria-hidden="true"></i> Email Address</a>
-              </li>
-                <br/>
-              <li class="nav-item">
-                <a href="/personalinfo"><i class="fa fa-wrench" aria-hidden="true"></i> Settings</a>
+                <a href="{% url 'feedback' %}"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
               </li>
             </ul>
           </li>
         </ul>
       </nav>
         <div style="padding-top: 250px">
-            <p style="font-size: 16px"><h3 style="color: white;">{{ company_name }}</h3><span style="color: white;">(owner)</span></p>
+            <p style="font-size: 16px"><h3 style="color: white;">{{ company_name }}</h3><span style="color: white;">(owner)</span>
         </div>
       <!-- /.sidebar-menu -->
     </div>
@@ -198,17 +235,64 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-    {% block main %}
-      <div class="content-wrapper">
-        <div class="content">
-          <div class="container-fluid">
-                {% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
 
-                {% endblock %}
+      <div class="page-header small">
+          <div class="row">
+              <div class="col-md-12">
+                  <br/><br/>
+                <h3 class="h3-heading" id="page-heading" style="background-color: #faf8f7">Your Production Plans</h3>
+              </div>
           </div>
-        </div>
       </div>
-    {% endblock main %}
+
+
+      <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Showing Production List</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0" style="height: 300px;">
+                <table class="table table-head-fixed text-nowrap" id="items-display-table">
+                  <thead>
+                    <tr>
+                      <th>Production Date</th>
+                      <th>Description</th>
+                       <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for productionplan in productionplans %}
+                          <tr>
+                            <td>
+                                <a href="/recipe/plandetails/{{ productionplan.id }}">{{ productionplan.date_field }}</a>
+                            </td>
+                              <td>
+                                {{ productionplan.description }}
+                            </td>
+                            <td>
+                                <a href="/recipe/plandetails/{{ productionplan.id }}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                &nbsp;&nbsp;&nbsp;<a href="/recipe/editplan/{{ productionplan.id }}"><i class="fas fa-edit"></i></a>
+                                &nbsp;&nbsp;&nbsp;<a href="/recipe/deleteplan/{{ productionplan.id }}"><i class="fas fa-trash"></i></a>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+      </div>
+
+
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -225,7 +309,6 @@
 
   </footer>
 </div>
-{% endblock body %}
 <!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->

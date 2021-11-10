@@ -1,0 +1,45 @@
+{% extends 'each_production_base_page.html' %}
+{% load static %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% block script %}
+    <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+    <script src="{% static 'js/handle_production_plan.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+          <label for="recipeList">Add specific recipes</label>
+          <select class="js-example-basic-single" id="recipeList" style="width: 350px;align-content: center">
+            <option value="">Select Recipe or Search </option>
+              {% for each_recipe in recipes %}
+                  <option value="{{ each_recipe.recipe_name }}">{{ each_recipe.recipe_name }}</option>
+              {% endfor %}
+          </select>
+            <label for="recipecategoryList">Add all recipes from selected category</label>
+          <select class="js-example-basic-single" id="recipecategoryList" style="width: 350px;align-content: center">
+            <option value="">Select Recipe or Search </option>
+            {% for each_category in recipe_categories %}
+                <option value="{{ each_category.category }}">{{ each_category.category }}</option>
+            {% endfor %}
+          </select>
+          {{ form | crispy }}
+          <div id="selected-recipes_list">
+            {% if has_recipes %}
+                {% for each_recipe in linked_recipes %}
+                    <div>
+                        <label>{{ each_recipe.recipe_name }}</label>
+                        <input type="hidden" value="{{ each_recipe.recipe_name }}" name="recipename">
+                        <label>Target Yield</label>
+                        <input name = "yieldCount" type="text" placeholder="Target Yield" value="{{ each_recipe.target_yield }}" style="width: auto" required />&nbsp;
+                        <input name = "categorybatch" type="text" value="{{ each_recipe.category_batch }}" readonly style="width: auto" required />&nbsp;
+                        <input type="button" value="Remove" class="remove" style="width: auto" />
+                    </div>
+                {% endfor %}
+            {% else %}
+
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-success">{% trans 'Save Plan' %}</button><br/>
+      </form>
+{% endblock %}

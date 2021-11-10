@@ -3,50 +3,24 @@
 <head>
     {% load static %}
     {% load i18n %}
+    {% load crispy_forms_filters %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Recipe Cost Calculator</title>
-
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static 'js/handle_production_plan.js' %}"></script>
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="{% static 'js/company_options.js' %}"></script>
-    <style>
-        .list-group-item:first-child {
-            border-top-right-radius: 4px;
-            border-top-left-radius: 4px;
-        }
-        a.list-group-item, button.list-group-item {
-            color: #555;
-        }
-
-        .list-group-item {
-            position: relative;
-            display: block;
-            padding: 10px 15px;
-            margin-bottom: -1px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-        }
-        .mt-2 .nav>li.active>a {
-            color: #eee;
-        }
-        .mt-2 .nav>li.active>a {
-            font-weight: bold;
-        }
-        .navbar-nav .nav-item li.active>a{
-            font-weight: bold;
-            color: #eee;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/handleingredients.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+    {% include 'django_quill/media.html' %}
 </head>
 <body class="hold-transition sidebar-mini">
-{% block body %}
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -63,7 +37,7 @@
             <a href="/recipe/page" class="nav-link">Ingredients</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Recipies</a>
+            <a href="/recipe/recipelist" class="nav-link">Recipies</a>
         </li>
         <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
@@ -97,7 +71,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <li class="dropdown user-nav" id="profile-button">
-	<button class="dropdown-toggle" id="expand-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	  <i class="fa fa-user" aria-hidden="true"></i>
 	  <span class="caret caret-light"></span>
 	</button>
@@ -171,21 +145,21 @@
           <br/><br/>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item menu-open">
-            <a href="/personalinfo/edit"><i class="fa fa-map-marker" aria-hidden="true"></i> Contact Info</a>
-              <br/><br/>
-            <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/personalinfo/change_password"><i class="fa fa-key" aria-hidden="true"></i> Password</a>
+                <a href="{% url 'production_plan' %}"><i class="fa fa-table" aria-hidden="true"></i> List Production Plans</a>
+              </li>
+              <br/>
+              <li class="nav-item">
+                <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> New Production Plan</a>
+              </li>
+              <br/>
+              <li class="nav-item">
+                <a href="#"><i class="fas fa-copy"></i> Production Plan Template</a>
               </li>
                 <br/>
               <li class="nav-item">
-                <a href="/personalinfo/change_email"><i class="fa fa-envelope" aria-hidden="true"></i> Email Address</a>
+                <a href="{% url 'feedback' %}"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
               </li>
-                <br/>
-              <li class="nav-item">
-                <a href="/personalinfo"><i class="fa fa-wrench" aria-hidden="true"></i> Settings</a>
-              </li>
-            </ul>
           </li>
         </ul>
       </nav>
@@ -198,17 +172,36 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-    {% block main %}
       <div class="content-wrapper">
         <div class="content">
           <div class="container-fluid">
-                {% block content %}
+              <h1>New Production Plan</h1>
 
-                {% endblock %}
+              <form method="post">
+                {% csrf_token %}
+                  <label for="recipeList">Add specific recipes</label>
+                  <select class="js-example-basic-single" id="recipeList" style="width: 350px;align-content: center">
+                    <option value="">Select Recipe or Search </option>
+                      {% for each_recipe in recipes %}
+                          <option value="{{ each_recipe.recipe_name }}">{{ each_recipe.recipe_name }}</option>
+                      {% endfor %}
+                  </select>
+                    <label for="recipecategoryList">Add all recipes from selected category</label>
+                  <select class="js-example-basic-single" id="recipecategoryList" style="width: 350px;align-content: center">
+                    <option value="">Select Recipe or Search </option>
+                    {% for each_category in recipe_categories %}
+                        <option value="{{ each_category.category }}">{{ each_category.category }}</option>
+                    {% endfor %}
+                  </select>
+                  {{ form | crispy }}
+                  <div id="selected-recipes_list">
+
+                  </div>
+                  <button type="submit" class="btn btn-success">{% trans 'Save Plan' %}</button><br/>
+              </form>
           </div>
         </div>
       </div>
-    {% endblock main %}
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -225,14 +218,19 @@
 
   </footer>
 </div>
-{% endblock body %}
 <!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
 <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.min.js' %}"></script>
 <!-- Bootstrap 4 -->
+<script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+</script>
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
