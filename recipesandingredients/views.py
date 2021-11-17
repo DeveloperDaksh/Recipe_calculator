@@ -441,6 +441,16 @@ def ingredient_details(request, ing_id):
                 if each[1].value == ingredient.nutriationData:
                     for col in each:
                         nutri_data.append(col.value)
+    if ingredient.fromMeasurementData == None:
+        from_measurments_data = []
+        from_measurments_units = []
+        to_measurments_data = []
+        to_measurments_units = []
+    else:
+        from_measurments_data = ingredient.fromMeasurementData
+        from_measurments_units = ingredient.fromMeasurementUnits
+        to_measurments_data = ingredient.toMeasurementData
+        to_measurments_units = ingredient.toMeasurementUnits
     return render(
         request,
         'each_ingridient_detail.html',
@@ -460,7 +470,7 @@ def ingredient_details(request, ing_id):
             'major_allergens': ingredient.majorAllergens,
             'nutri_data': zip(nutri_data,nutri_fields),
             'has_nutridata': has_nutridata,
-            'ingredient_measurments': zip(ingredient.fromMeasurementData,ingredient.fromMeasurementUnits,ingredient.toMeasurementData,ingredient.toMeasurementUnits)
+            'ingredient_measurments': zip(from_measurments_data,from_measurments_units,to_measurments_data,to_measurments_units)
         }
     )
 

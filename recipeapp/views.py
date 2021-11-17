@@ -20,6 +20,7 @@ from .forms import RegistrationForm, LoginForm, UpdateEmailForm, UpdateContactIn
     UserSettingsForm, FeedBackForm, EmailForm, ForgetPassword
 
 
+# landing page
 def index_page(request):
     if request.user.is_authenticated:
         return redirect('/dashboard')
@@ -27,6 +28,7 @@ def index_page(request):
         return render(request, 'index_page.html', {'menu': 'index'})
 
 
+# checking if the user is authorized user or not if authorized it will redirect to user's dashboard
 def login_user(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)

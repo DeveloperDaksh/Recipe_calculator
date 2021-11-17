@@ -5,12 +5,24 @@ from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# ==============================================================================
+# CORE SETTINGS
+# ==============================================================================
+
 SECRET_KEY = config('SECRET_KEY', default=string.ascii_letters)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+
+# ==============================================================================
+# SENDGRID SETTINGS
+# ==============================================================================
+
+# SENDGRID API
 SENDGRID_EMAIL_API = config('SENDGRID_EMAIL_API')
+# FROM EMAIL ADDRESS THAT SHOULD BE SINGLE USER VERIFIED
 FROM_EMAIL = config('FROM_EMAIL')
 
 INSTALLED_APPS = [
@@ -31,6 +43,11 @@ INSTALLED_APPS = [
     'company.apps.CompanyConfig',
 ]
 
+
+# ==============================================================================
+# MIDDLEWARE SETTINGS
+# ==============================================================================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -45,9 +62,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Recipe.urls'
 
-AUTH_USER_MODEL = "recipeapp.UserModel"
+
+# ==============================================================================
+# THIRD-PARTY APPS SETTINGS
+# ==============================================================================
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+# ==============================================================================
+# TEMPLATES SETTINGS
+# ==============================================================================
 
 TEMPLATES = [
     {
@@ -78,6 +103,12 @@ DATABASES = {
     }
 }
 
+
+# ==============================================================================
+# AUTHENTICATION AND AUTHORIZATION SETTINGS
+# ==============================================================================
+
+AUTH_USER_MODEL = "recipeapp.UserModel"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -93,6 +124,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+# ==============================================================================
+# INTERNATIONALIZATION AND LOCALIZATION SETTINGS
+# ==============================================================================
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -103,13 +139,23 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+# ==============================================================================
+# STATIC FILES SETTINGS
+# ==============================================================================
+
 STATIC_URL = '/static/'
-
+# FOR PRODUCTION
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
+# FOR LOCAL
 '''STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )'''
+
+
+# ==============================================================================
+# MEDIA FILES SETTINGS
+# ==============================================================================
 
 MEDIA_URL = '/media/'
 
