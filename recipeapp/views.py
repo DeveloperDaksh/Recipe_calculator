@@ -35,6 +35,7 @@ def login_user(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            # checking the user is authenticated or not
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -66,14 +67,17 @@ def login_user(request):
 
 @login_required(login_url='/login')
 def dashboard(request):
+    # getting the details of the current user
     user = UserModel.objects.get(username=request.user)
+    # getting all the companies of current user.
     company_details = Company.objects.filter(user=request.user)
-    print(company_details.count())
+    # if the company name exist in session use that one else store company name as first name and last name's company into sessions
     if request.session.has_key('company_name'):
         company_name = request.session['company_name']
     else:
         request.session['company_name'] = user.first_name + ' ' + user.last_name + "'s Company"
         company_name = request.session['company_name']
+    # if the user has more than one company set many_companies true else false because if user has multiple companies it will show in drop down
     if company_details.count() > 1:
         many_companies = True
     else:
@@ -103,6 +107,7 @@ def create_user(request):
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             try:
+                # checking the user with email id or username exists or not
                 UserModel.objects.get(Q(username=username) | Q(email=email))
                 return render(
                     request,
@@ -114,6 +119,7 @@ def create_user(request):
                     }
                 )
             except UserModel.DoesNotExist:
+                # if username or email doesn't exists it creates user with given details
                 user = UserModel.objects.create_user(
                     username=username,
                     password=password,
@@ -123,6 +129,7 @@ def create_user(request):
                 user.last_name = last_name
                 user.save()
                 login(request, user)
+                # default it will create company with user's first name and last name
                 company_new = Company.objects.create(
                     user=username,
                     name=first_name + ' ' + last_name + "'s Company",
@@ -130,6 +137,7 @@ def create_user(request):
                 )
                 company_new.save()
                 request.session['company_name'] = first_name + ' ' + last_name + "'s Company"
+                # default it will create categories of ingredients and recipes
                 IngredientCategories.objects.create(
                     user=username,
                     company_name=request.session['company_name'],
@@ -155,12 +163,14 @@ def create_user(request):
                     category_type='ingredient'
                 ).save()
                 messages.success(request, _('Account created'))
+                # After creation of account user will redirect to dashboard
                 return redirect('/dashboard')
     else:
         form = RegistrationForm()
         return render(request, 'register.html', {'form': form, 'menu': 'create'})
 
 
+# to get and update the timezone of the user
 @login_required(login_url='/login')
 def getPersonalInfo(request):
     user = UserModel.objects.get(username=request.user)
@@ -209,6 +219,7 @@ def getPersonalInfo(request):
         )
 
 
+# updating the email of the user
 class UpdateEmail(LoginRequiredMixin, UpdateView):
     model = UserModel
     form_class = UpdateEmailForm
@@ -237,6 +248,7 @@ class UpdateEmail(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
+# updating or changing password of the user
 @login_required(login_url='/login')
 def updatePassword(request):
     user = UserModel.objects.get(username=request.user)
@@ -251,6 +263,7 @@ def updatePassword(request):
         if form.is_valid():
             current_password = form.cleaned_data['current_password']
             userInfo = UserModel.objects.get(username=request.user)
+            # check the user is authenticated or not
             if userInfo.check_password(current_password):
                 new_password = form.cleaned_data['new_password']
                 confirm_password = form.cleaned_data['confirm_password']
@@ -351,6 +364,7 @@ class UpdateContactInfo(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
+# to get the feedback of the users
 @login_required(login_url='/login')
 def user_feedback(request):
     user = UserModel.objects.get(username=request.user)
@@ -399,12 +413,14 @@ def user_feedback(request):
         )
 
 
+# to send the forget password link to the user's email
 def forget_password(request):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['user_email']
             try:
+                # check the email in the user's record if it exists it will send email with password reset link
                 user = UserModel.objects.get(email=email)
                 try:
                     authToken = Token.objects.get(user_id=user.id)
@@ -481,6 +497,7 @@ def forget_password(request):
         )
 
 
+# updating password form the user's forgotten password
 def update_password(request, token):
     try:
         user_token = Token.objects.get(key=token)
@@ -490,8 +507,6 @@ def update_password(request, token):
                 password = form.cleaned_data['password']
                 cpassword = form.cleaned_data['conform_password']
                 if password == cpassword:
-                    print(user_token)
-                    print(user_token.user)
                     user = UserModel.objects.get(username=user_token.user)
                     user.set_password(password)
                     user.save()
@@ -542,9 +557,11 @@ def help_us(request):
     return render(request, 'help_page.html', {'menu': 'help'})
 
 
+# user can logout
 @login_required(login_url='/login')
 def user_logout(request):
     logout(request)
+    # after user logout it will delete all the sessions of the user
     for key in request.session.keys():
         del request.session[key]
     return redirect('/')

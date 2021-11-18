@@ -15,6 +15,7 @@ from .forms import CompanyForm, CompanySettings, CurrencyDisplay, BillingCountry
     ShippingCarrierForm
 
 
+# user creating a new company
 @login_required(login_url='/login')
 def create_company(request):
     user = UserModel.objects.get(username=request.user)
@@ -29,6 +30,7 @@ def create_company(request):
         if form.is_valid():
             name_company = form.cleaned_data['name']
             try:
+                # check weather the company name is exists in the current user
                 company_check = Company.objects.get(user=request.user, name=name_company)
                 return render(
                     request,
@@ -46,11 +48,12 @@ def create_company(request):
                     }
                 )
             except Company.DoesNotExist:
+                # if the company name doesn't exists in current user it will create a company and switched to that company
                 company_detail = form.save(commit=False)
                 company_detail.user = request.user
                 company_detail.save()
-                print(company_detail.name)
                 request.session['company_name'] = company_detail.name
+                # default it will create some categories in the ingredient when user creates a new company
                 IngredientCategories.objects.create(
                     user=request.user.username,
                     company_name=request.session['company_name'],
@@ -75,6 +78,7 @@ def create_company(request):
                     category='UnCategorized',
                     category_type='ingredient'
                 ).save()
+                # after creating a company it will redirect to the update page of the company
                 return redirect('/company/edit')
         else:
             return render(
@@ -110,15 +114,16 @@ def create_company(request):
         )
 
 
+# when the user switched or changed his company it will store the company name in the session
 @login_required(login_url='/login')
 def save_company_name(request):
     if request.method == 'POST':
         name = request.POST.get('valueSelected')
-        print(name)
         request.session['company_name'] = name
         return HttpResponse(json.dumps({'status': 'ok'}), content_type='application/json')
 
 
+# updating the company information
 @login_required(login_url='/login')
 def edit_company(request):
     user = UserModel.objects.get(username=request.user)
@@ -166,6 +171,7 @@ def edit_company(request):
         )
 
 
+# updating or modifying the settings of the company
 @login_required(login_url='/login')
 def company_settings(request):
     user = UserModel.objects.get(username=request.user)
@@ -175,6 +181,7 @@ def company_settings(request):
     else:
         many_companies = False
     company_name = request.session.get('company_name')
+    # setting contain 4 forms preferred units,currency display settings,company billing information,delete data in the company respectively
     company_instance = Company.objects.get(name=company_name, user=request.user)
     form1 = CompanySettings(instance=company_instance)
     form2 = CurrencyDisplay(instance=company_instance,
@@ -256,6 +263,7 @@ def company_settings(request):
             if form4.is_valid():
                 password = form4.cleaned_data['password']
                 form4 = DeleteForm()
+                # checking the password is valid or not if valid it will delete data in the company
                 if user.check_password(password):
                     ingredients_info = Ingredients.objects.filter(username=request.user, company_name=company_name)
                     recipe_info = RecipesModel.objects.filter(recipe_user=request.user, company_name=company_name)
@@ -326,6 +334,7 @@ def company_settings(request):
         )
 
 
+# display the subscription details
 @login_required(login_url='/login')
 def view_subscription(request):
     user = UserModel.objects.get(username=request.user)
@@ -350,6 +359,7 @@ def view_subscription(request):
     )
 
 
+# list all the customers in the current company of the current user
 @login_required(login_url='/login')
 def customer_dashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -360,7 +370,6 @@ def customer_dashboard(request):
         many_companies = False
     company_name = request.session.get('company_name')
     customers = Customers.objects.filter(user=request.user, company_name=company_name)
-    print(customers)
     return render(
         request,
         'customers.html',
@@ -377,6 +386,7 @@ def customer_dashboard(request):
     )
 
 
+# creates a new customer in the current company
 @login_required(login_url='/login')
 def new_customer(request):
     user = UserModel.objects.get(username=request.user)
@@ -390,6 +400,7 @@ def new_customer(request):
         form = CustomerForm(request.POST)
         if form.is_valid():
             try:
+                # check if the customer name is exists in the current company of that user
                 check_customer = Customers.objects.get(user=request.user, company_name=company_name,
                                                        name=form.cleaned_data['name'])
                 return render(
@@ -408,6 +419,7 @@ def new_customer(request):
                     }
                 )
             except Customers.DoesNotExist:
+                # if the customer name doesn't exists it will create a new customer with the given details
                 customer = form.save(commit=False)
                 customer.user = request.user
                 customer.company_name = company_name
@@ -446,6 +458,7 @@ def new_customer(request):
         )
 
 
+# display the details of the particular customer that the user selected
 @login_required(login_url='/login')
 def each_customer(request, customer_id):
     user = UserModel.objects.get(username=request.user)
@@ -472,6 +485,7 @@ def each_customer(request, customer_id):
     )
 
 
+# edit or update the details of the particular customer
 @login_required(login_url='/login')
 def edit_customer(request, customer_id):
     user = UserModel.objects.get(username=request.user)
@@ -522,6 +536,7 @@ def edit_customer(request, customer_id):
         )
 
 
+# delete particular customer
 @login_required(login_url='/login')
 def delete_customer(request, customer_id):
     customer_instance = Customers.objects.get(id=customer_id)
@@ -529,6 +544,7 @@ def delete_customer(request, customer_id):
     return redirect('/company/customers')
 
 
+# download all the customers in the current company of the curent user
 @login_required(login_url='/login')
 def download_customers(request):
     company_name = request.session.get('company_name')
@@ -550,6 +566,7 @@ def download_customers(request):
     return response
 
 
+# display all the shipping carriers in current company of current user
 @login_required(login_url='/login')
 def shipping_carriers_dashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -576,6 +593,7 @@ def shipping_carriers_dashboard(request):
     )
 
 
+# create a new shipping carrier in current company
 @login_required(login_url='/login')
 def new_shipping_carrier(request):
     user = UserModel.objects.get(username=request.user)
@@ -589,6 +607,7 @@ def new_shipping_carrier(request):
         form = ShippingCarrierForm(request.POST)
         if form.is_valid():
             try:
+                # check if the shipping carrier name is exists in the current company of that user
                 check_shipping = ShippingCarriers.objects.get(user=request.user, company_name=company_name,
                                                               name=form.cleaned_data['name'])
                 return render(
@@ -607,6 +626,7 @@ def new_shipping_carrier(request):
                     }
                 )
             except ShippingCarriers.DoesNotExist:
+                # if the customer name doesn't exists it will create a new customer with the given details
                 shipping_carrier = form.save(commit=False)
                 shipping_carrier.user = request.user
                 shipping_carrier.company_name = company_name
@@ -645,6 +665,7 @@ def new_shipping_carrier(request):
         )
 
 
+# display details of a particular shipping carrier
 @login_required(login_url='/login')
 def each_shipping_carrier(request, shipping_id):
     user = UserModel.objects.get(username=request.user)
@@ -671,6 +692,7 @@ def each_shipping_carrier(request, shipping_id):
     )
 
 
+# edit or update the details of the shipping carriers
 @login_required(login_url='/login')
 def edit_shipping_carrier(request, shipping_id):
     user = UserModel.objects.get(username=request.user)
@@ -721,6 +743,7 @@ def edit_shipping_carrier(request, shipping_id):
         )
 
 
+# delete particular shipping carrier
 @login_required(login_url='/login')
 def delete_shipping_carrier(request, shipping_id):
     shipping_instance = ShippingCarriers.objects.get(id=shipping_id)
@@ -728,6 +751,7 @@ def delete_shipping_carrier(request, shipping_id):
     return redirect('/company/shipping-carriers')
 
 
+# downloads the shipping carriers in the current company of the current user
 @login_required(login_url='/login')
 def download_shipping_carriers(request):
     company_name = request.session.get('company_name')

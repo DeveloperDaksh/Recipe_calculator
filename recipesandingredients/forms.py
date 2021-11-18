@@ -11,6 +11,7 @@ class IngredientsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         company_name = self.request.session['company_name']
+        # on loading form it will get current suppliers in the user in current company
         usersup = Suppliers.objects.filter(user=self.request.user, company_name=company_name)
         super(IngredientsForm, self).__init__(*args, **kwargs)
         if usersup.count() > 0:
@@ -33,11 +34,13 @@ class IngredientsForm(forms.ModelForm):
             ]
         customer_categeroy_choices = [('', '-----------'), ("Add Category", "Add Category")]
         storage_choices = [('', '-----------')]
+        # get all ingredient categories in the current company of the current user
         user_categories = IngredientCategories.objects.filter(user=self.request.user,
                                                               company_name=self.request.session['company_name'],
                                                               category_type='ingredient')
         for each in user_categories:
             customer_categeroy_choices.append((each.category, each.category))
+        # get all the storage areas from current company of current user
         storage_filter = StorageAreas.objects.filter(user=self.request.user.username,
                                                      company_name=self.request.session['company_name'])
         for storage in storage_filter:
@@ -68,6 +71,7 @@ class RecipeForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         company_name = self.request.session['company_name']
         super(RecipeForm, self).__init__(*args, **kwargs)
+        # get all the categories of the recipe in the current company of current user
         categories = IngredientCategories.objects.filter(user=self.request.user.username, company_name=company_name,
                                                          category_type='recipe')
         recipe_categories = [('', '--------------')]

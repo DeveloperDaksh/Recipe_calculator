@@ -19,6 +19,7 @@ from .models import Ingredients, RecipesModel, IngredientData, Suppliers, Ingred
 from .units import qty_units
 
 
+# creating new ingredient
 @login_required(login_url='/login')
 def handleIngredients(request):
     user = UserModel.objects.get(username=request.user)
@@ -29,14 +30,12 @@ def handleIngredients(request):
         many_companies = False
     company_name = request.session['company_name']
     if request.method == 'POST':
-        print(request.POST)
         form = IngredientsForm(request=request, data=request.POST)
-        print(form.is_valid())
         ingMeasurementsData = request.POST.get('ingMeasurementsData')
-        print(ingMeasurementsData)
         if form.is_valid():
             ingname = form.cleaned_data['name']
             try:
+                # check the ingredient name is exists in the current compnay of curremt user
                 Ingredients.objects.get(Q(name=ingname) & Q(username=request.user) & Q(company_name=company_name))
                 return render(
                     request,
@@ -54,6 +53,7 @@ def handleIngredients(request):
                     }
                 )
             except Ingredients.DoesNotExist:
+                # if ingredient name doesn't exists create that ingredient
                 ingredientsdata = form.save(commit=False)
                 ingredientsdata.username = request.user
                 ingredientsdata.company_name = company_name
@@ -64,6 +64,7 @@ def handleIngredients(request):
                 indredients.nutriationData = request.POST.get('nutri-data-link-value')
                 indredients.fdcId = request.POST.get('nutri-data-fdcid')
                 indredients.save()
+                # if user add the supplier it will create that supplier
                 if form.cleaned_data['suppliers'] == 'Add Supplier':
                     indredients.suppliers = request.POST.get('customsupplier')
                     indredients.save()
@@ -84,6 +85,7 @@ def handleIngredients(request):
                                                        caseQuantity=form.cleaned_data['caseQuantity'],
                                                        packSize=form.cleaned_data['packSize'],
                                                        qtyUnits=form.cleaned_data['qtyUnits'], preferred=True).save()
+                # if the user adds category it will store the category
                 if form.cleaned_data['category'] == 'Add Category':
                     indredients.category = request.POST.get('customcategory')
                     indredients.save()
@@ -93,6 +95,7 @@ def handleIngredients(request):
                 if ingMeasurementsData == '':
                     pass
                 else:
+                    # it will store the measuremnts of the ingredient
                     ingdata = ingMeasurementsData.split(';')
                     fromdata = ingdata[0].split(',')
                     todata = ingdata[1].split(',')
@@ -138,6 +141,7 @@ def handleIngredients(request):
         )
 
 
+# list all the ingredients in the current company of current user
 @login_required(login_url='/login')
 def ingredientsDashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -168,6 +172,7 @@ def ingredientsDashboard(request):
     )
 
 
+# list all the recipes in the current company of current user
 @login_required(login_url='/login')
 def recipeDashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -197,6 +202,7 @@ def recipeDashboard(request):
     )
 
 
+# creating recipe in the current compnay of the current user
 @login_required(login_url='/login')
 def handleRecipes(request):
     user = UserModel.objects.get(username=request.user)
@@ -211,6 +217,7 @@ def handleRecipes(request):
         form = RecipeForm(request=request, data=request.POST)
         if form.is_valid():
             try:
+                # check if the recipe name is exists in the current compnay of current user
                 check_recipe = RecipesModel.objects.get(recipe_user=request.user.username,
                                                         recipe_name=form.cleaned_data['recipe_name'],
                                                         company_name=company_name)
@@ -231,6 +238,7 @@ def handleRecipes(request):
                     }
                 )
             except RecipesModel.DoesNotExist:
+                # if the recipe name doesn't exists it will create a new recipe with given details
                 if 'ingAmount' not in request.POST:
                     recipe = form.save(commit=False)
                     recipe.recipe_user = request.user.username
@@ -238,6 +246,7 @@ def handleRecipes(request):
                     recipe.save()
                     return redirect('/recipe/details/' + str(recipe.id))
                 else:
+                    # if user provides the ingrdient to be linked it will store that ingredient
                     recipe = form.save(commit=False)
                     recipe.recipe_user = request.user.username
                     recipe.company_name = company_name
@@ -274,6 +283,7 @@ def handleRecipes(request):
         )
 
 
+# it will display the details of the particular recipe that the user selected
 @login_required(login_url='/login')
 def recipe_detail(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -300,6 +310,7 @@ def recipe_detail(request, ing_id):
     )
 
 
+# edit or update the recipe
 @login_required(login_url='/login')
 def edit_recipe(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -407,6 +418,7 @@ def edit_recipe(request, ing_id):
         )
 
 
+# it will display details of the particular ingredient that the user selected
 @login_required(login_url='/login')
 def ingredient_details(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -425,6 +437,8 @@ def ingredient_details(request, ing_id):
     worksheet = wookbook.active
     nutri_data = []
     nutri_fields = []
+    # if the ingredient is linked any nutrition from the nutrition databse and has measurments
+    # it will display the nutrients form the nutrition database and dsiplay the nutrition details from nutrition_data.xlsx file
     if ingredient.nutriationData == '':
         has_nutridata = False
     else:
@@ -432,8 +446,8 @@ def ingredient_details(request, ing_id):
             has_nutridata = False
         else:
             has_nutridata = True
-            for i,j in enumerate(worksheet):
-                if i==1:
+            for i, j in enumerate(worksheet):
+                if i == 1:
                     for each_j in j:
                         nutri_fields.append(each_j.value)
                     break
@@ -468,13 +482,15 @@ def ingredient_details(request, ing_id):
             'ingredient_recipes': ingredient_recipes,
             'has_major_allergens': ingredient.hasMajorAllergens,
             'major_allergens': ingredient.majorAllergens,
-            'nutri_data': zip(nutri_data,nutri_fields),
+            'nutri_data': zip(nutri_data, nutri_fields),
             'has_nutridata': has_nutridata,
-            'ingredient_measurments': zip(from_measurments_data,from_measurments_units,to_measurments_data,to_measurments_units)
+            'ingredient_measurments': zip(from_measurments_data, from_measurments_units, to_measurments_data,
+                                          to_measurments_units)
         }
     )
 
 
+# edit or update the particular ingredient
 @login_required(login_url='/login')
 def edit_ingredient(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -607,6 +623,7 @@ def edit_ingredient(request, ing_id):
         )
 
 
+# delete particular ingredient
 @login_required(login_url='/login')
 def delete_ingredient(request, ing_id):
     ingredient = Ingredients.objects.get(id=ing_id)
@@ -614,6 +631,7 @@ def delete_ingredient(request, ing_id):
     return redirect('/recipe/page')
 
 
+# delete particular recipe
 @login_required(login_url='/login')
 def delete_recipe(request, rec_id):
     recipe = RecipesModel.objects.get(id=rec_id)
@@ -621,6 +639,7 @@ def delete_recipe(request, rec_id):
     return redirect('/recipe/recipelist')
 
 
+# download the ingredient in current company of current user
 @login_required(login_url='/login')
 def download_ingredients(request):
     ingredients = Ingredients.objects.filter(username=request.user)
@@ -646,6 +665,7 @@ def download_ingredients(request):
     return response
 
 
+# download recipes in the current company of the current user
 @login_required(login_url='/login')
 def download_recipes(request):
     recipies = RecipesModel.objects.filter(recipe_user=str(request.user))
@@ -665,6 +685,7 @@ def download_recipes(request):
     return response
 
 
+# this will display all the suppliers of the current company of the current user
 @login_required(login_url='/login')
 def suppliers_dashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -691,6 +712,7 @@ def suppliers_dashboard(request):
     )
 
 
+# it will create a supplier in current company
 @login_required(login_url='/login')
 def create_supplier(request):
     user = UserModel.objects.get(username=request.user)
@@ -741,6 +763,7 @@ def create_supplier(request):
         )
 
 
+# displays the information of the selected supplier
 @login_required(login_url='/login')
 def each_supplier_info(request, supplier_id):
     user = UserModel.objects.get(username=request.user)
@@ -767,6 +790,7 @@ def each_supplier_info(request, supplier_id):
     )
 
 
+# edit or update the supplier information of particular supplier
 @login_required(login_url='/login')
 def edit_supplier(request, supplier_id):
     user = UserModel.objects.get(username=request.user)
@@ -822,6 +846,7 @@ def edit_supplier(request, supplier_id):
         )
 
 
+# delete particular supplier
 @login_required(login_url='/login')
 def delete_supplier(request, supplier_id):
     supplier = Suppliers.objects.get(id=supplier_id)
@@ -829,6 +854,7 @@ def delete_supplier(request, supplier_id):
     return redirect('/recipe/suppliers')
 
 
+# download all the suppliers in the current company of current users
 @login_required(login_url='/login')
 def download_suppliers(request):
     company_name = request.session.get('company_name')
@@ -851,7 +877,7 @@ def download_suppliers(request):
     response['Content-Disposition'] = 'attachment; filename=Suppliers.csv'
     return response
 
-
+# display both ingredients and recipes categories of the current compamy of the current user and creates both ingredients and recipe categories
 @login_required(login_url='/login')
 def category_dashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -867,6 +893,7 @@ def category_dashboard(request):
                                                             category_type='recipe')
     ingredients = Ingredients.objects.filter(username=request.user.username, company_name=company_name)
     if request.method == 'POST':
+        # creates ingredient category
         if 'ingredientCategory' in request.POST:
             IngredientCategories.objects.create(
                 user=request.user.username,
@@ -874,6 +901,7 @@ def category_dashboard(request):
                 category=request.POST.get('ingredientCategory'),
                 category_type='ingredient'
             ).save()
+        # creates recipe category
         if 'recipeCategory' in request.POST:
             IngredientCategories.objects.create(
                 user=request.user.username,
@@ -901,6 +929,7 @@ def category_dashboard(request):
         )
 
 
+# delete particular category that may be a ingredient or recipe category
 @login_required(login_url='/login')
 def delete_category(request, cat_id):
     category = IngredientCategories.objects.get(id=cat_id)
@@ -908,12 +937,14 @@ def delete_category(request, cat_id):
     return redirect('/recipe/listcategories')
 
 
+# it will provide the measuremnts when the user selects the particular nutrition form the nutrition database
 @login_required(login_url='/login')
 def handle_measurement(request):
     print(request.POST)
     units = ['oz', 'lb', 'Kg', 'T', 'g', 'pinch', 'tsp', 'tbsp', 'floz', 'dL', 'cup', 'pt', 'ml', 'qt', 'L', 'gal',
              'kl', 'each', 'dozen', 'hundred', 'thousand', 'million', 's', 'min', 'hr']
     data = []
+    # measurments.csv file is download from fdc . it will provide the mesurment for the selected nutrition
     with open('./measurments/measurements.csv', 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
         fields = next(csv_reader)
@@ -941,6 +972,7 @@ def handle_measurement(request):
     return HttpResponse({json.dumps({'measurement_units': data})}, content_type='application/json')
 
 
+# creating a storage area for the ingredient
 @login_required(login_url='/login')
 def crate_storage_area(request):
     user = UserModel.objects.get(username=request.user)
@@ -995,6 +1027,7 @@ def crate_storage_area(request):
         )
 
 
+# edit or update the particular storage area
 @login_required(login_url='/login')
 def edit_storage_area(request, storage_area_id):
     user = UserModel.objects.get(username=request.user)
@@ -1070,6 +1103,7 @@ def edit_storage_area(request, storage_area_id):
         )
 
 
+# to upload the images of the ingredients
 @login_required(login_url='/login')
 def ingredient_images(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -1107,6 +1141,7 @@ def ingredient_images(request, ing_id):
         )
 
 
+# to delete particular image of the ingredient
 @login_required(login_url='/login')
 def delete_ingredient_image(request, img_id):
     ing_image = IngredientImages.objects.get(id=img_id)
@@ -1114,6 +1149,7 @@ def delete_ingredient_image(request, img_id):
     return redirect('/recipe/page')
 
 
+# it will replace one ingredient linked with recipes with another ingredient of the selected recipe
 @login_required(login_url='/login')
 def replace_ingredient(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -1152,6 +1188,7 @@ def replace_ingredient(request, ing_id):
     )
 
 
+# to confirm which recipes to be replaced
 @login_required(login_url='/login')
 def confirm_replace(request, from_id, to_id):
     user = UserModel.objects.get(username=request.user)
@@ -1198,6 +1235,7 @@ def confirm_replace(request, from_id, to_id):
         )
 
 
+# it will create or updare the nutrition details of the particular ingredient
 @login_required(login_url='/login')
 def edit_nutrition_details(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -1281,6 +1319,7 @@ def edit_nutrition_details(request, ing_id):
         )
 
 
+# to make a preparation instruction of a recipe
 @login_required(login_url='/login')
 def recipe_preparation_instructions(request, recipe_id):
     user = UserModel.objects.get(username=request.user)
@@ -1334,6 +1373,7 @@ def recipe_preparation_instructions(request, recipe_id):
         )
 
 
+# to add the existing supplier or create supplier to the particular ingredient
 @login_required(login_url='/login')
 def add_ingredient_supplier(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -1405,6 +1445,7 @@ def add_ingredient_supplier(request, ing_id):
         )
 
 
+# display all the ingredient suppliers linked with that ingredient
 @login_required(login_url='/login')
 def edit_ingredient_suppliers(request, ing_id):
     user = UserModel.objects.get(username=request.user)
@@ -1434,6 +1475,7 @@ def edit_ingredient_suppliers(request, ing_id):
     )
 
 
+# edit or update the supplier details of the particular ingredient supplier
 @login_required(login_url='/login')
 def edit_each_ingredient_supplier(request, ing_id, ing_supplier_id):
     user = UserModel.objects.get(username=request.user)
@@ -1490,19 +1532,24 @@ def edit_each_ingredient_supplier(request, ing_id, ing_supplier_id):
         )
 
 
+# delete particular ingredient supplier
 @login_required(login_url='/login')
 def delete_each_ingredient_supplier(request, ing_id, ing_supplier_id):
     IngredientSuppliers.objects.get(id=ing_supplier_id).delete()
     return redirect('/recipe/edit_ingredient_suppliers/' + str(ing_id))
 
 
+# to set particulat ingredient as a prefered ingredient that will apply all the properties of the preffered ingredient supplier to the current ingredient
 @login_required(login_url='/login')
 def set_preferred_ingredient_supplier(request, ing_id, ing_supplier_id):
     ingredient = Ingredients.objects.get(id=ing_id)
     try:
+        # getting the ingredient with prefered
         ingredient_supplier = IngredientSuppliers.objects.get(ingredient_relation=ingredient, preferred=True)
+        # making previous prefered as false
         ingredient_supplier.preferred = False
         ingredient_supplier.save()
+        # setting prefered for the selected ingredient
         ing_supplier = IngredientSuppliers.objects.get(id=ing_supplier_id)
         ing_supplier.preferred = True
         ing_supplier.save()
@@ -1515,12 +1562,15 @@ def set_preferred_ingredient_supplier(request, ing_id, ing_supplier_id):
         ingredient.countryOfOrigin = ing_supplier.country_of_origin
         ingredient.save()
     except IngredientSuppliers.DoesNotExist:
+        # this is for if we setting prefered for first time
         ing_supp =  IngredientSuppliers.objects.get(ingredient_relation=ingredient)
         ing_supp.preferred = True
         ing_supp.save()
     return redirect('/recipe/edit_ingredient_suppliers/' + str(ing_id))
 
 
+# display the allergen of the recipes
+# get this allergens by the linked ingredients with the recipes
 @login_required(login_url='/login')
 def allergen_recipes(request, rec_id):
     user = UserModel.objects.get(username=request.user)
@@ -1562,6 +1612,7 @@ def allergen_recipes(request, rec_id):
     )
 
 
+# to upload the images of the particular recipe
 @login_required(login_url='/login')
 def recipe_images(request,rec_id):
     user = UserModel.objects.get(username=request.user)
@@ -1599,12 +1650,14 @@ def recipe_images(request,rec_id):
         )
 
 
+# to delete the image of the particular recipe
 @login_required(login_url='/login')
 def delete_recipe_image(request,img_id):
     RecipeImages.objects.get(id=img_id).delete()
     return redirect('/recipe/recipelist')
 
 
+# list all the production plans in the current company of the current user
 @login_required(login_url='/login')
 def production_plan_dashboard(request):
     user = UserModel.objects.get(username=request.user)
@@ -1631,6 +1684,7 @@ def production_plan_dashboard(request):
     )
 
 
+# to create or update the production plan template
 @login_required(login_url='/login')
 def productionplantemplate(request):
     user = UserModel.objects.get(username=request.user)
@@ -1689,6 +1743,7 @@ def productionplantemplate(request):
                 }
             )
 
+# to create a production plan in the current company
 @login_required(login_url='/login')
 def new_production_plan(request):
     user = UserModel.objects.get(username=request.user)
@@ -1754,6 +1809,7 @@ def new_production_plan(request):
             }
         )
 
+# it will return the recipe details as a response when the user selects the recipe in the current company of the current user
 @login_required(login_url='/login')
 def get_recipe_details(request):
     if request.method == 'POST':
@@ -1768,6 +1824,7 @@ def get_recipe_details(request):
         return HttpResponse(json.dumps({'recipe_name':recipe.recipe_name,'yield_count':recipe.recipe_yield_count,'yield_units':recipe.yield_units,'other_ingredient':other_ingredients}),content_type='application/json')
 
 
+# it will return the recipes and their details from the category selected by the user
 @login_required(login_url='/login')
 def get_recipes_from_category(request):
     if request.method == 'POST':
@@ -1787,6 +1844,7 @@ def get_recipes_from_category(request):
         return HttpResponse(json.dumps({'recipe_data':recipes_data}),content_type='application/json')
 
 
+# edit or update the particular production plan
 @login_required(login_url='/login')
 def edit_production_plan(request,plan_id):
     user = UserModel.objects.get(username=request.user)
@@ -1862,11 +1920,13 @@ def edit_production_plan(request,plan_id):
             }
         )
 
+# delete particular production plan
 @login_required(login_url='/login')
 def delete_production_plan(request,plan_id):
     ProductionPlan.objects.get(id=plan_id).delete()
     return redirect('/recipe/productionplan')
 
+# it will display the details of the particular production plan
 @login_required(login_url='/login')
 def each_plan_details(request,plan_id):
     user = UserModel.objects.get(username=request.user)
@@ -1894,6 +1954,7 @@ def each_plan_details(request,plan_id):
     )
 
 
+# this will create a new recipe from the existing properties of the particular recipe
 @login_required(login_url='/login')
 def copy_recipe(request,rec_id):
     user = UserModel.objects.get(username=request.user)
