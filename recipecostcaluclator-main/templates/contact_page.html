@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- contact -->
+  <section class="py-15 py-xl-20 border-top">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 mb-5">
+          <h2>Let's make something big. <span class="d-block">Together.</span></h2>
+        </div>
+        <div class="col-lg-8">
+          <form action="#" class="row g-3">
+            <div class="col-md-6">
+              <label for="yourName" class="form-label">Your Name</label>
+              <input type="text" class="form-control" id="yourName" placeholder="Your Name">
+            </div>
+            <div class="col-md-6">
+              <label for="yourCompany" class="form-label">Your Company</label>
+              <input type="text" class="form-control" id="yourCompany" placeholder="Your Company">
+            </div>
+            <div class="col-md-12">
+              <label for="yourMessage" class="form-label">Message</label>
+              <textarea class="form-control" id="yourMessage" rows="3" placeholder="Message"></textarea>
+            </div>
+            <div class="col-md-8">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="gridCheck">
+                <label class="form-check-label text-muted small" for="gridCheck">
+                  I accept the <a href="#" class="underline">Terms
+                    & Conditions</a> and acknowledge that my information will be used in accordance with Privacy
+                  Policy.
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <a href="#" class="btn btn-block btn-primary rounded-pill">Get in touch</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+

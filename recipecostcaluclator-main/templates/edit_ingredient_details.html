@@ -1,0 +1,37 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% load static %}
+{% block script %}
+    <script src="{% static 'js/nutrition_details_images.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+                <h3>Edit Nutrition Facts</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button type="submit" class="btn btn-success">{% trans 'Update Nutrition Data' %}</button>
+                </form>
+              </div>
+            <!-- /.form-group -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <h3>Help</h3>
+                <div id="nutrition_fact_weight_helper">
+                    <h3 id="h3_display_msg"></h3>
+                    <p id="p_display_msg"></p>
+                    <img id="img_display_nutri"/>
+                </div>
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+    <!-- /.row -->
+  </div>
+{% endblock %}

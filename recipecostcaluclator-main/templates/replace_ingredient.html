@@ -1,0 +1,67 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% block content %}
+    <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Filter By Content</label>
+                    <input type="text" class="form-control" id="rec-filetr-by-name" placeholder="Start Typing a name">
+                  </div>
+                <!-- /.form-group -->
+              </div>
+              <!-- /.col -->
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Filter By Category</label>
+                  <select id="recipe-filter-category" class="form-control select2bs4" style="width: 100%;">
+                    {% for ingredient_category in ingredient_categories %}
+                        <option value="{{ ingredient_category.category }}">{{ ingredient_category.category }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+    <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0" style="height: 300px;">
+                  {% if has_recipe %}
+                      <table class="table table-head-fixed text-nowrap" id="items-display-table">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                                <th>Actions</th>
+                                <th>Replace</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for each_item in ingredient_list %}
+                                {% if each_item.name == ingredient.name %}
+                                {% else %}
+                                    <tr>
+                                        <td>{{ each_item.name }}</td>
+                                        <td>Replace with {{ ingredient.name }}</td>
+                                        <td>
+                                            <a href="/recipe/confirm_replace/{{ ingredient.id }}/{{ each_item.id }}">
+                                                <input type="submit" value="Choose to Change" class="btn choose_food">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                    {% else %}
+                        <span style="color: crimson;font-size: 16px">No Recipes </span>
+                    {% endif %}
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+      </div>
+{% endblock %}

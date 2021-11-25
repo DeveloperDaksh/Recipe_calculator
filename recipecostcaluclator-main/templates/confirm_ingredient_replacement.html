@@ -1,0 +1,33 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load i18n %}
+{% block content %}
+    <div class="page-header small">
+      <div class="row">
+          <div class="col-md-12">
+            <h3 class="h3-heading" id="page-heading">Confirm Ingredient Replacement</h3>
+          </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+
+          </div>
+        </div>
+        <div class="row">
+        </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <p>In which recipes would you would like to replace <strong>{{ from_ingredient.name }}</strong> with <strong>{{ to_ingredient.name }}</strong>?</p>
+        </div>
+      </div>
+    <div class="row mb50"></div>
+        <form method="post">
+            {% csrf_token %}
+            {% for recipe in recipes %}
+                <input type="checkbox" name="replaceIng" value="{{ recipe.recipe_name }}">{{ recipe.recipe_name }}<br/>
+            {% endfor %}
+             <button type="submit" class="btn btn-success">{% trans 'Replace Now' %}</button>
+        </form>
+    </div>
+{% endblock %}

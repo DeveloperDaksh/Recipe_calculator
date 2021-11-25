@@ -1,0 +1,337 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load static %}
+{% load i18n %}
+{% block script %}
+    <script src="{% static 'js/update_nutritions.js' %}"></script>
+{% endblock %}
+{% block content %}
+      <div class="modal-content" id="nut-loading" style="display: none">
+          <div class="modal-header">
+            <h4 class="modal-title" style="padding-left: 500px">Link to Nutrient Database</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="nutri-close-btn"><span aria-hidden="true">×</span></button>
+          </div>
+        <div class="modal-body">
+            <label class="integer optional" for="ingredient_cached_usda_item_id">Search Nutrient Database</label>
+            <div class="form-group hidden ingredient_cached_usda_item_id"><div><input class="form-control hidden" type="hidden" name="ing-nutri-search" id="ing-search"></div></div>
+            <div class="input-group leading">
+              <input type="text" name="cached_usda_item_name" id="cached_usda_item_name" class="form-control" autocomplete="off">
+              <span class="input-group-btn"><button id="clear_food" class="btn btn-info" type="button" style="display: block">Search</button></span>
+                <span class="input-group-btn"><button id="reset_food" class="btn btn-info" type="button" style="display: none">Unlink</button></span>
+            </div>
+            <div id="nutrient_database_search_results" style="display: none;">
+
+            </div>
+        </div>
+      </div>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.name.errors }}
+      {{ form.name.label_tag }}
+      {{ form.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {{ form.price.errors }}
+      {{ form.price.label_tag }}
+      {{ form.price }}<br/><br/>
+      {{ form.caseQuantity.errors }}
+      {{ form.caseQuantity.label_tag }}
+      {{ form.caseQuantity}}&nbsp;&nbsp;
+      {{ form.packSize.errors }}
+      {{ form.packSize.label_tag }}
+      {{ form.packSize}}&nbsp;&nbsp;
+      {{ form.qtyUnits.errors }}
+      {{ form.qtyUnits.label_tag }}
+      {{ form.qtyUnits}}<br/><br/>
+      <!--<div id="category-price-list">
+
+      </div>-->
+      {{ form.category.errors }}
+      {{ form.category.label_tag }}
+      {{ form.category}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="hidden" name="customcategory" placeholder="Enter Category" id="customcategoryid">
+        <br/><br/>
+      {{ form.orderCode.errors }}
+      {{ form.orderCode.label_tag }}
+      {{ form.orderCode}}<br/><br/>
+      {{ form.suppliers.errors }}
+      {{ form.suppliers.label_tag }}
+      {{ form.suppliers }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="hidden" name="customsupplier" placeholder="Enter Supplier" id="customsupplierid">
+      <br/><br/>
+      {{ form.brand.errors }}
+      {{ form.brand.label_tag }}
+      {{ form.brand}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {{ form.countryOfOrigin.errors }}
+      {{ form.countryOfOrigin.label_tag }}
+      {{ form.countryOfOrigin }}&nbsp;&nbsp;&nbsp;
+      {{ form.storageAreas.errors }}
+      {{ form.storageAreas.label_tag }}
+      {{ form.storageAreas}}
+      <br/><br/>
+      {{ form.parLevel.errors }}
+      {{ form.parLevel.label_tag }}
+      {{ form.parLevel}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {{ form.parUnits.errors }}
+      {{ form.parUnits.label_tag }}
+      {{ form.parUnits }}<br/><br/>
+      <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="nutrition-database-link">
+            <a role="button" data-toggle="collapse" href="#collapse-nutrition-database-link" aria-expanded="true" aria-controls="collapse-nutrition-database-link" class="text-grey-900" style="text-decoration: none;">
+              <i class="fa fa-apple" aria-hidden="true"></i>Nutrition Data
+            </a>
+            <span class="pull-right">
+              <a role="button" data-toggle="collapse" href="#collapse-nutrition-database-link" aria-expanded="true" aria-controls="collapse-nutrition-database-link" class="">
+                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+              </a>
+            </span>
+          </div>
+          <div id="collapse-nutrition-database-link" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="nutrition-database-link" aria-expanded="true" style="">
+            <div class="panel-body">
+            <div id="ingredient-link-to-external-database">
+
+            <label for="fdc_link">Link to Nutrient Database</label>
+            <p>You might want to link ingredients to the nutrient database if:
+              </p><ul>
+                <li>You want to <strong>create nutrition labels</strong> or <strong>view nutrition data</strong> for this ingredient.</li>
+                <li>You need to create a <strong>measurement converter</strong> for this ingredient
+                  (measurement converters are used to provide unit conversions, for example, weight (kg, lb) to volume (gallons, pints, liters)).</li>
+              </ul>
+            <p></p>
+            <p id="display-selected-nutrition" style="font-size: 15px;display: none"></p>
+          <button class="btn btn-info" type="button" id="nutri-link-btn" style="display: block">Click Here To Link...</button>
+                <button class="btn btn-info" type="button" id="nutri-link-btn-change" style="display: none">Click Here To Change...</button>
+        </div>
+            </div>
+          </div>
+        </div>
+      <br/>
+      <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="measurement-converters">
+            <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters" class="text-grey-900" style="text-decoration:none;">
+              <i class="fa fa-balance-scale" aria-hidden="true"></i>Measurement Converters
+            </a>
+            <span class="pull-right">
+              <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters">
+                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+              </a>
+            </span>
+          </div>
+          <div id="collapse-measurement-converters" class="panel-collapse collapse " role="tabpanel" aria-labelledby="measurement-converters">
+            <div class="panel-body">
+
+            <div class="row">
+              <div class="col-lg-12">
+                  <div id="default-weight-to-volume-conversion-help">
+          <div class="well">
+            <p>
+              If your ingredient is purchased by weight (e.g. lbs, kgs, etc.) but in your recipe you use it as a volume (e.g. cups, tsp, etc.), you'll need
+              to create a <strong>measurement converter</strong>. You can weigh or measure the ingredient yourself, or you can use an online
+              conversion tool (we recommend using <a class="text-blue-900" href="https://www.wolframalpha.com/">Wolfram Alpha</a>.
+              Check out the video below to see how easy this is!).
+            </p>
+            <p>If you have linked your ingredient to the <strong>nutrient database</strong> above, we will display any automatic measurement conversions
+              that are available below <strong>if they exist</strong>.
+            </p>
+            <p>
+              If you need just a little more help, watch our <strong>two minute measurement converter video</strong> and
+              it should clear up any last questions! <a class="venobox btn btn-info vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/422860777"><i class="vmiddle fas fa-video" aria-hidden="true"></i> Watch Video Now</a>
+            </p>
+          </div>
+        </div>
+
+                <div id="conversion_help" data-food-weight-path="https://recipecostcalculator.net/food_descriptions/conversion_help"></div>
+                <div class="ingredient-form-checked-measurements-summary-JS"></div>
+                <div class="form-group measurement-converters measurement-converters-JS">
+          <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
+        <br/>
+        <p id="display-units-measurment-err" style="color: crimson"></p>
+        <br/>
+        <p id="display-units-msg"></p>
+        <br/>
+        <div id="conversion_help" style="display: none">
+
+        </div>
+        <input type="hidden" name="nutri-data-link-value" value="{{ ingredient.nutriationData }}" id="nutri-data-link-value">
+        <input type="hidden" name="nutri-data-fdcid" value="{{ ingredient.fdcId }}" id="nutri-data-fdcid">
+        <br/>
+
+
+
+        <br>
+        <input id="btnAdd" type="button" value="Add New Measurements" />
+        <br /><br/>
+        <div id="TextBoxContainer">
+            <!--Textboxes will be added here -->
+            {% if has_measurements %}
+                {% for m1,m2,m3,m4 in measurements %}
+                    <div>
+                    <input name = "fromMeasurment" type="number" placeholder="From Measurment" value = "{{ m1 }}" style="width: auto" />
+                        <select name="ing-from-measuremnts">
+                            <option selected value="{{ m2 }}">{{ m2 }}</option>
+                            <optgroup label="-- Weight --">
+                          <option value="Ounce (oz) (28.35 g)">Ounce (oz) (28.35 g)</option>
+
+                          <option value="Pound (lb) (453.59 g)">Pound (lb) (453.59 g)</option>
+
+                          <option value="Kilogram (Kg) (1000 g)">Kilogram (Kg) (1000 g)</option>
+
+                          <option value="Tonne (T) (1000000 g)">Tonne (T) (1000000 g)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Volume --">
+                          <option value="Pinch (pinch) (0.3 ml)">Pinch (pinch) (0.3 ml)</option>
+
+                          <option value="US Teaspoon (tsp) (4.93 ml)">US Teaspoon (tsp) (4.93 ml)</option>
+
+                          <option value="US Tablespoon (tbsp) (14.79 ml)">US Tablespoon (tbsp) (14.79 ml)</option>
+
+                          <option value="Fluid-ounce (floz) (29.57 ml)">Fluid-ounce (floz) (29.57 ml)</option>
+
+                          <option value="Deciliter (dL) (100 ml)">Deciliter (dL) (100 ml)</option>
+
+                          <option value="US Cup (cup) (236.59 ml)">US Cup (cup) (236.59 ml)</option>
+
+                          <option value="Pint (pt) (473.18 ml)">Pint (pt) (473.18 ml)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Quantity --">
+                          <option value="Dozen (dozen) (12 each)">Dozen (dozen) (12 each)</option>
+
+                          <option value="Hundred (hundred) (100 each)">Hundred (hundred) (100 each)</option>
+
+                          <option value="Thousand (thousand) (1000 each)">Thousand (thousand) (1000 each)</option>
+
+                          <option value="Million (million) (1000000 each)">Million (million) (1000000 each)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Time --">
+                          <option value="Second (s)">Second (s)</option>
+
+                          <option value="Minute (min) (60 s)">Minute (min) (60 s)</option>
+
+                          <option value="Hour (hr) (3600 s)">Hour (hr) (3600 s)</option>
+
+                          </optgroup>
+                    </select>
+                    <input name = "toMeasurment" type="number" placeholder="To Measurment" value = "{{ m3 }}" style="width: auto" />&nbsp;
+                    <select name="ing-to-measuremnts">
+                        <option selected value="{{ m4 }}">{{ m4 }}</option>
+                            <optgroup label="-- Weight --">
+                          <option value="Ounce (oz) (28.35 g)">Ounce (oz) (28.35 g)</option>
+
+                          <option value="Pound (lb) (453.59 g)">Pound (lb) (453.59 g)</option>
+
+                          <option value="Kilogram (Kg) (1000 g)">Kilogram (Kg) (1000 g)</option>
+
+                          <option value="Tonne (T) (1000000 g)">Tonne (T) (1000000 g)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Volume --">
+                          <option value="Pinch (pinch) (0.3 ml)">Pinch (pinch) (0.3 ml)</option>
+
+                          <option value="US Teaspoon (tsp) (4.93 ml)">US Teaspoon (tsp) (4.93 ml)</option>
+
+                          <option value="US Tablespoon (tbsp) (14.79 ml)">US Tablespoon (tbsp) (14.79 ml)</option>
+
+                          <option value="Fluid-ounce (floz) (29.57 ml)">Fluid-ounce (floz) (29.57 ml)</option>
+
+                          <option value="Deciliter (dL) (100 ml)">Deciliter (dL) (100 ml)</option>
+
+                          <option value="US Cup (cup) (236.59 ml)">US Cup (cup) (236.59 ml)</option>
+
+                          <option value="Pint (pt) (473.18 ml)">Pint (pt) (473.18 ml)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Quantity --">
+                          <option value="Dozen (dozen) (12 each)">Dozen (dozen) (12 each)</option>
+
+                          <option value="Hundred (hundred) (100 each)">Hundred (hundred) (100 each)</option>
+
+                          <option value="Thousand (thousand) (1000 each)">Thousand (thousand) (1000 each)</option>
+
+                          <option value="Million (million) (1000000 each)">Million (million) (1000000 each)</option>
+
+                          </optgroup>
+                          <optgroup label="-- Time --">
+                          <option value="Second (s)">Second (s)</option>
+
+                          <option value="Minute (min) (60 s)">Minute (min) (60 s)</option>
+
+                          <option value="Hour (hr) (3600 s)">Hour (hr) (3600 s)</option>
+
+                          </optgroup>
+                    </select>
+                    <input type="button" value="Remove" class="remove" style="width: auto" /><br/><br/>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <input type="hidden" name="ingMeasurementsData" id="id_ingMeasurementsData" value="{{ ing_val }}">
+        </div>
+        <input id="btnGet" type="button" value="Save Measurements" style="visibility: hidden" />
+          <br>
+        </div>
+
+
+              </div>
+            </div>
+
+            </div>
+          </div>
+      </div>
+      <br/>
+      <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="supplemental-ingredient-fields">
+            <a role="button" data-toggle="collapse" href="#collapse-supplemental-ingredient-fields" aria-expanded="true" aria-controls="collapse-supplemental-ingredient-fields" class="text-grey-900" style="text-decoration: none;">
+              <i class="fa fa-cart-plus" aria-hidden="true"></i>Allergens, Ingredient List, Notes, etc.
+            </a>
+            <span class="pull-right">
+              <a role="button" data-toggle="collapse" href="#collapse-supplemental-ingredient-fields" aria-expanded="true" aria-controls="collapse-supplemental-ingredient-fields" class="">
+                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+              </a>
+            </span>
+          </div>
+          <div id="collapse-supplemental-ingredient-fields" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="supplemental-ingredient-fields" aria-expanded="true" style="">
+            <div class="panel-body">
+
+            <div class="row">
+              <div class="col-lg-6">
+                    <br/>
+                  {{ form.sugarAdded.errors }}
+                  {{ form.sugarAdded.label_tag }}
+                  {{ form.sugarAdded}}<br/>
+                  {{ form.usablePercentage.errors }}
+                  {{ form.usablePercentage.label_tag }}
+                  {{ form.usablePercentage }}<br/>
+                  {{ form.displayName.errors }}
+                  {{ form.displayName.label_tag }}
+                  {{ form.displayName}}<br/>
+                  {{ form.notes.errors }}
+                  {{ form.notes.label_tag }}
+                  {{ form.notes }}<br/>
+                  {{ form.hasMajorAllergens.errors }}
+                  {{ form.hasMajorAllergens.label_tag }}
+                  {{ form.hasMajorAllergens }}
+                  <div id="display-major-allergens" {% if has_major_Allergens %}style="visibility: visible";{% else %}style="visibility: hidden;{% endif %}height: auto">
+                      {% if ingredient.hasMajorAllergens %}
+                          {% for each in allergens_list %}
+                              <li style="list-style-type: none">
+                                  <label for="{{ each }}">
+                                      <input type="checkbox" name="majorAllergens" value="{{ each }}" id="{{ each }}" {% if each in allergens %} checked {% endif %}>{{ each }}
+                                  </label>
+                              </li>
+                          {% endfor %}
+                      {% else %}
+                          {{ form.majorAllergens.errors }}
+                          {{ form.majorAllergens.label_tag }}
+                          {{ form.majorAllergens }}<br/>
+                      {% endif %}
+                  </div>
+              </div>
+            </div>
+              </div>
+            </div>
+
+            </div>
+      <br/>
+      <input type="submit" value="Save Changes" class="btn btn-success">
+      <br/>
+  </form>
+{% endblock %}

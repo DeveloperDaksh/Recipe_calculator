@@ -1,0 +1,31 @@
+{% extends 'each_recipe_base_page.html' %}
+
+{% block content %}
+    {% block main %}
+      <div class="content-wrapper">
+        <div class="content">
+          <div class="container-fluid">
+              <br/><br/>
+                <!-- main content -->
+                <div class="col-lg-6 col-md-8">
+                    <div class="panel panel-primary">
+                      <div class="panel-heading">
+                        Cost and Yield
+                      </div>
+                      <div class="panel-body">
+                        <dl class="dl-horizontal">
+                          <dt>Recipe Name</dt>
+                          <dd>{{ recipe.recipe_name }}</dd>
+                          <dt>Yield Count</dt>
+                          <dd>{{ recipe.recipe_yield_count }}</dd>
+                          <dt>Yield Units</dt>
+                          <dd>{{ recipe.yield_units }}</dd>
+                        </dl>
+                      </div>
+                    </div>
+                </div>
+          </div>
+        </div>
+      </div>
+    {% endblock main %}
+{% endblock %}

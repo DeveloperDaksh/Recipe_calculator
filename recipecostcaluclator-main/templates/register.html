@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    <section class="bg-black overflow-hidden">
+    <div class="py-15 py-xl-20 d-flex flex-column container level-3 min-vh-100">
+      <div class="row align-items-center justify-content-center my-auto">
+        <div class="col-md-10 col-lg-8 col-xl-5">
+
+          <div class="card">
+            <div class="card-header bg-white text-center pb-0">
+              <h5 class="fs-4">Register</h5>
+            </div>
+            <div class="card-body bg-white">
+                {% if success %}
+                    <p><span style="color: seagreen">{{success}} Back To  <a href="/login" style="text-decoration: none"> Login</a> </span></p>
+                {% endif %}
+                {% if fail %}
+                    <p><span style="color: crimson">{{fail}} </span></p>
+                {% endif %}
+              <form method="post">
+                  {% csrf_token %}
+                {{ form | crispy}}
+                  <br/>
+                <div class="d-grid mb-2">
+                  <button type="submit" class="btn btn-success">{% trans 'Register' %}</button>
+                </div>
+              </form>
+            </div>
+            <div class="card-footer bg-opaque-black inverted text-center">
+              <p class="text-secondary">Already have an account? <a href="/login" class="underline">Sign In</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figure class="background background-overlay" style="background-image: url('{% static 'assets/images/small-3.jpg' %}')"></figure>
+  </section>
+{% endblock %}

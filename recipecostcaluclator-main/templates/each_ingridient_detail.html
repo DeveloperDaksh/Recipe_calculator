@@ -1,0 +1,181 @@
+{% extends 'each_ingridient_base_page.html' %}
+{% load get_dict_values %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% load static %}
+{% load division %}
+{% load list_iteration %}
+{% block script %}
+    <script src="{% static 'js/edit_ingredient_supplier.js'%}"></script>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <h3 class="h3-heading" id="page-heading">{{ ingredient.name }}</h3>
+    </div>
+    <div class="panel-body">
+        <div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Supplier</th>
+                <th>Order Code</th>
+                <th>Brand</th>
+                <th>Purchase amount</th>
+                <th>Price</th>
+                <th>Price Per Unit</th>
+                <th>Preferred ?</th>
+                <th style="text-align: right;"><span id="filter-info">Actions</span></th>
+              </tr>
+            </thead>
+
+      <tbody>
+        {% for ingredient_supplier in ingredient_suppliers %}
+            <tr>
+            <td>{{ ingredient_supplier.supplier }}</td>
+            <td>{{ ingredient_supplier.order_code }}</td>
+            <td>{{ ingredient_supplier.brand }}</td>
+            <td>{{ ingredient_supplier.packSize }}/{{ ingredient_supplier.caseQuantity }} {{ qty_units | get_item:ingredient_supplier.qtyUnits }}</td>
+            <td>${{ ingredient_supplier.price }}</td>
+            <td>{{ ingredient_supplier.price | division:ingredient_supplier.caseQuantity | division:ingredient_supplier.packSize | floatformat:2 }}</td>
+            <td>{% if ingredient_supplier.preferred %}<i class="fa fa-check" aria-hidden="true"></i>{% else %}
+                <a href="/recipe/preferred/{{ ingredient.id }}/{{ ingredient_supplier.id }}">Set Preferred</a>
+            {% endif %}</td>
+            <td class="actions">
+              <div class="btn-group btn-group-xs">
+                <a class="btn btn-default" data-toggle="tooltip" data-original-title="Edit" data-remote="true" href="/recipe/edit_ingredient_supplier/edit/{{ ingredient.id }}/{{ ingredient_supplier.id }}"><i class="vmiddle fas fa-edit" aria-hidden="true"></i></a>
+                <a data-confirm="Delete this Supplier Ingredient?" class="btn btn-default" data-toggle="tooltip" data-original-title="Delete" data-remote="true" rel="nofollow" data-method="delete" href="/recipe/edit_ingredient_supplier/delete/{{ ingredient.id }}/{{ ingredient_supplier.id }}"><i class="vmiddle fas fa-trash" aria-hidden="true"></i></a>
+              </div>
+            </td>
+        </tr>
+        {% endfor %}
+  </tbody>
+  </table>
+    <div>
+        <a href="/recipe/ingridientdetails/addsupplier/{{ ingredient.id }}"><button class="btn btn-success" type="submit"><i class="fa fa-plus" aria-hidden="true"></i>Add Supplier</button></a>
+    </div>
+    <br/><br/>
+    {% if form %}
+        <form method="post">
+        {% csrf_token %}
+        {{ form | crispy}}
+        <button type="submit" class="btn btn-success">{% trans 'Create Supplier Ingredient' %}</button><br/>
+    </form>
+            <br/>
+            <a href="/recipe/ingridientdetails/{{ ingredient.id }}"><button type="button" class="btn btn-success">{% trans 'Cancel' %}</button></a>
+    <br/><br/>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Ingredient Details
+          </div>
+          <div class="panel-body">
+            <dl class="dl-horizontal">
+
+              <dt>Country of Origin:</dt><dd>{{ ingredient.countryOfOrigin }}</dd>
+              <dt>Category:</dt><dd>{{ ingredient.category }}</dd>
+                <dt>FDC ID:</dt><dd>{{ ingredient.fdcId }}</dd>
+              <dt>Is Added Sugar:</dt><dd>{{ ingredient.sugarAdded }}</dd>
+                <dt>Storage Areas:</dt><dd>{{ ingredient.storageAreas }}</dd>
+                <dt>Par Level:</dt><dd>{{ ingredient.parLevel }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-primary ">
+      <div class="panel-heading">
+        Measurement Converters
+      </div>
+      <div class="panel-body">
+          {% if ingredient.fromMeasurementData == '[]' %}
+              <div class="row">
+                  <div class="col-sm-12">
+                    <p>No Measurements Data</p>
+                  </div>
+              </div>
+          {% else %}
+              {% for from_data,from_unit,to_data,to_unit in ingredient_measurments %}
+                  <div class="row">
+                      <div class="col-sm-12">
+                        {{ from_data }} {{ qty_units | get_item:from_unit }}
+                        <i class="fas fa-arrows-alt-h"></i>
+                        {{ to_data }} {{ qty_units | get_item:to_unit }}
+                      </div>
+                  </div>
+              {% endfor %}
+          {% endif %}
+      </div>
+    </div>
+    <br/><br/>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Allergens
+          </div>
+          <div class="panel-body">
+              <div class="panel-body">
+                {% if  not has_major_allergens and has_major_allergens == 'No' %}
+                    Allergen information unspecified
+                {% else %}
+                    {{ major_allergens | iterate_list }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <br/><br/>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            Recipes Using This Ingredient
+          </div>
+          <div class="panel-body">
+              <table class="table table-striped">
+                    <tbody>
+                        {% for each_ingredient_recipe in ingredient_recipes %}
+                            <tr>
+                                <td>
+                                    <a href="/recipe/details/{{ each_ingredient_recipe.id }}">{{ each_ingredient_recipe.recipe_name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+              </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                Nutrition Data
+              </div>
+                {% if has_nutridata %}
+                    <div class="panel-body">
+                          <h4 class="mt0">Recommended Daily Intakes</h4>
+                        <p>Please choose the correct set of recommended daily intakes for your purpose.</p>
+                          <em>Please contact the company owner to change this setting if necessary.</em>
+                        <table class="table table-striped">
+                            <tbody>
+                                {% for each_nutri,each_nutri_filed in nutri_data %}
+                                    <tr>
+                                        <td>{{ each_nutri_filed }}</td>
+                                        <td>{{ each_nutri }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>This ingredient has no nutrition information associated.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+{% endblock %}

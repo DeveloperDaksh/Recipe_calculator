@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load i18n %}
+    {% load crispy_forms_filters %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipe Cost Calculator</title>
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Theme style -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="{% static 'js/handle_production_plan.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/handleingredients.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+    <script src="{% static 'js/company_options.js' %}"></script>
+    {% include 'django_quill/media.html' %}
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="/dashboard" class="nav-link">Home</a>
+      </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/recipe/page" class="nav-link">Ingredients</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/recipe/recipelist" class="nav-link">Recipies</a>
+        </li>
+        <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="{% url 'category_dashboard' %}" class="dropdown-item">Ingredient &amp; Recipe Categories </a></li>
+              <li><a href="{% url 'suppliers_dashboard' %}" class="dropdown-item">Suppliers</a></li>
+              <li><a href="{% url 'customer_dashboard' %}" class="dropdown-item">Customers </a></li>
+              <li><a href="{% url 'shipping_carriers_dashboard' %}" class="dropdown-item">Shipping Carriers</a></li>
+          </ul>
+        </li>
+        <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Inventory <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li style="background-color: #abdde5">Raw Materials</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
+              <li><a href="{% url 'create_storage' %}" class="dropdown-item">Storage Areas</a></li>
+              <li style="background-color: #abdde5">Finished Goods</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
+          </ul>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="{% url 'production_plan' %}" class="nav-link">Planning</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Contact</a>
+        </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+        <li class="dropdown user-nav" id="profile-button">
+	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	  <i class="fa fa-user" aria-hidden="true"></i>
+	  <span class="caret caret-light"></span>
+	</button>
+	<div class="dropdown-menu" id="drop-profile-show" role="menu" style="width: 400px; padding-left: 20px">
+	  <div class="m20">
+		  <address>
+			<strong><i class="fa fa-user" aria-hidden="true"></i> Logged in as</strong><br>
+			    {{ first_name }} {{ last_name }}
+                <br/>
+                {{ email }}
+		  </address>
+		  <address>
+			<strong><i class="fa fa-building" aria-hidden="true"></i> Active company</strong><br>
+			    {% if many_companies %}
+                    <select id="company-select">
+                        {% for company_detail in company_details %}
+                            {% if company_detail.name == company_name %}
+                                <option selected value="{{ company_name }}">{{ company_name }}</option>
+                            {% else %}
+                                <option value="{{ company_detail.name }}">{{ company_detail.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+			    {% else %}
+                    {% for company_detail in company_details %}
+                        {{ company_detail.name }}
+                    {% endfor %}
+                {% endif %}
+		  </address>
+		  <address>
+			<strong><i class="fa fa-lock" aria-hidden="true"></i> Role</strong><br>
+			Owner
+		  </address>
+		  <hr>
+		  <h5>User Settings</h5>
+		  <div class="list-group">
+			<a class="list-group-item" href="/personalinfo"><i class="fa fa-user" aria-hidden="true"></i> Personal Settings</a>
+			<a class="list-group-item" href="/personalinfo/change_email"><i class="fa fa-lock" aria-hidden="true"></i> Email &amp; Password</a>
+		  </div>
+
+		  <h5>Company Settings</h5>
+		  <div class="list-group">
+			<a class="list-group-item" href="/company/new"><i class="fa fa-plus-square" aria-hidden="true"></i> New Company...</a>
+			  <a class="list-group-item" href="/company/settings"><i class="fa fa-gear" aria-hidden="true"></i> Company Settings</a>
+				<a class="list-group-item" href="/company/roles"><i class="fa fa-users" aria-hidden="true"></i> Invite / Manage Users</a>
+				<a class="list-group-item" href="/invoices"><i class="fa fa-table" aria-hidden="true"></i> Invoices</a>
+				<a class="list-group-item" href="/company/subscription"><i class="fa fa-toolbox" aria-hidden="true"></i> Subscriptions</a>
+				<a class="list-group-item" href="/company/credit_card"><i class="fa fa-credit-card" aria-hidden="true"></i> Update Credit Card</a>
+		  </div>
+		<div class="list-group">
+		  <a class="list-group-item" rel="nofollow" data-method="delete" href="/logout"><i class="fa fa-running" aria-hidden="true"></i> Log Out</a>
+		</div>
+	  </div>
+	</div>
+  </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'recipecost.jpg' %}" alt="RecipeCost Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Recipe Cost</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-2">
+          <br/><br/>
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item menu-open">
+              <li class="nav-item">
+                <a href="{% url 'production_plan' %}"><i class="fa fa-table" aria-hidden="true"></i> List Production Plans</a>
+              </li>
+              <br/>
+              <li class="nav-item">
+                <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> New Production Plan</a>
+              </li>
+              <br/>
+              <li class="nav-item">
+                <a href="#"><i class="fas fa-copy"></i> Production Plan Template</a>
+              </li>
+                <br/>
+              <li class="nav-item">
+                <a href="{% url 'feedback' %}"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
+              </li>
+          </li>
+        </ul>
+      </nav>
+        <div style="padding-top: 250px">
+            <p style="font-size: 16px"><h3 style="color: white;">{{ company_name }}</h3><span style="color: white;">(owner)</span></p>
+        </div>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="content">
+          <div class="container-fluid">
+              <h1>New Production Plan</h1>
+
+              <form method="post">
+                {% csrf_token %}
+                  <label for="recipeList">Add specific recipes</label>
+                  <select class="js-example-basic-single" id="recipeList" style="width: 350px;align-content: center">
+                    <option value="">Select Recipe or Search </option>
+                      {% for each_recipe in recipes %}
+                          <option value="{{ each_recipe.recipe_name }}">{{ each_recipe.recipe_name }}</option>
+                      {% endfor %}
+                  </select>
+                    <label for="recipecategoryList">Add all recipes from selected category</label>
+                  <select class="js-example-basic-single" id="recipecategoryList" style="width: 350px;align-content: center">
+                    <option value="">Select Recipe or Search </option>
+                    {% for each_category in recipe_categories %}
+                        <option value="{{ each_category.category }}">{{ each_category.category }}</option>
+                    {% endfor %}
+                  </select>
+                  {{ form | crispy }}
+                  <div id="selected-recipes_list">
+
+                  </div>
+                  <button type="submit" class="btn btn-success">{% trans 'Save Plan' %}</button><br/>
+              </form>
+          </div>
+        </div>
+      </div>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    <div class="p-3">
+      <h5>Title</h5>
+      <p>Sidebar content</p>
+    </div>
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script>
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+    });
+</script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+</body>
+</html>

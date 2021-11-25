@@ -1,0 +1,29 @@
+{% extends 'each_supplier_base_page.html' %}
+{% load list_iteration %}
+{% block content %}
+    <div class="content-wrapper">
+        <div>
+            <div>
+                <h3 class="card-title">{{ supplier.supplier_name }}</h3>
+            </div><br/><br/>
+            <div class="panel panel-primary">
+              <div>
+                  <h3>Supplier Details</h3>
+              </div>
+              <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>Ordered Email :</dt><dd>{% if supplier.order_email == '' %}Not specified{% else %}{{ supplier.order_email }}{% endif %}</dd>
+                    <dt>Phone:</dt><dd>{% if supplier.phone_number == '' %}Not specified{% else %}{{ supplier.phone_number }}{% endif %}</dd>
+                    <dt>Sales Rep</dt><dd>{% if supplier.sales_rep_first_name == '' and supplier.sales_rep_last_name == '' %}Not Specified{% else %}{{ supplier.sales_rep_first_name }} {{ supplier.sales_rep_last_name }}{% endif %}</dd>
+                    <dt>Rep Email:</dt><dd>{% if supplier.sales_rep_email == '' %}Not specified{% else %}{{ supplier.sales_rep_email }}{% endif %}</dd>
+                    <dt>Rep Phone:</dt><dd>{% if supplier.sales_rep_phone_number == '' %}Not specified{% else %}{{ supplier.sales_rep_phone_number }}{% endif %}</dd>
+                    <dt>Preferred Ordered Method</dt><dd>{% if supplier.preferred_order_method == '' %}Not specified{% else %}{{ supplier.preferred_order_method }}{% endif %}</dd>
+                    <dt>Delivery Days</dt><dd>{% if supplier.delivery_days == '[]' %}Not specified{% else %}{{ supplier.delivery_days | iterate_list }}{% endif %}</dd>
+                    <dt>Note:</dt><dd>{% if supplier.note == '' %}Not specified{% else %}{{ supplier.note }}{% endif %}</dd>
+                </dl>
+
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

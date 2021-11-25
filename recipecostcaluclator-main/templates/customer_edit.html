@@ -1,0 +1,10 @@
+{% extends 'each_customer_base_page.html' %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form | crispy}}
+        <button type="submit" class="btn btn-success">{% trans 'Update Customer' %}</button>
+    </form>
+{% endblock %}

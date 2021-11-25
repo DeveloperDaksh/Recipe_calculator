@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load i18n %}
+    {% load crispy_forms_filters %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipe Cost Calculator</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/handleingredients.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'js/handleingredients.js' %}">
+
+    </script>
+    <script src="{% static 'js/handle_measurments.js' %}"></script>
+    <script src="{% static 'js/handle_nutritions.js' %}"></script>
+    <script src="{% static 'js/company_options.js' %}"></script>
+</head>
+<body class="hold-transition sidebar-mini">
+{% block body %}
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="/dashboard" class="nav-link">Home</a>
+      </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/recipe/page" class="nav-link">Ingredients</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/recipe/recipelist" class="nav-link">Recipies</a>
+        </li>
+        <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Lists <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="{% url 'category_dashboard' %}" class="dropdown-item">Ingredient &amp; Recipe Categories </a></li>
+              <li><a href="{% url 'suppliers_dashboard' %}" class="dropdown-item">Suppliers</a></li>
+              <li><a href="{% url 'customer_dashboard' %}" class="dropdown-item">Customers </a></li>
+              <li><a href="{% url 'shipping_carriers_dashboard' %}" class="dropdown-item">Shipping Carriers</a></li>
+          </ul>
+        </li>
+        <li class="dropdown open"> <!-- If I add active class here then ul turns into a jankfest -->
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">Inventory <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li style="background-color: #abdde5">Raw Materials</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
+              <li><a href="{% url 'create_storage' %}" class="dropdown-item">Storage Areas</a></li>
+              <li style="background-color: #abdde5">Finished Goods</li>
+              <li><a href="#" class="dropdown-item">Inventory</a></li>
+              <li><a href="#" class="dropdown-item">Lot Codes </a></li>
+          </ul>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="{% url 'production_plan' %}" class="nav-link">Planning</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Contact</a>
+        </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+        <li class="dropdown user-nav" id="profile-button">
+	<button class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	  <i class="fa fa-user" aria-hidden="true"></i>
+	  <span class="caret caret-light"></span>
+	</button>
+	<div class="dropdown-menu" id="drop-profile-show" role="menu" style="width: 400px; padding-left: 20px">
+	  <div class="m20">
+		  <address>
+			<strong><i class="fa fa-user" aria-hidden="true"></i> Logged in as</strong><br>
+			    {{ first_name }} {{ last_name }}
+                <br/>
+                {{ email }}
+		  </address>
+		  <address>
+			<strong><i class="fa fa-building" aria-hidden="true"></i> Active company</strong><br>
+			    {% if many_companies %}
+                    <select id="company-select">
+                        {% for company_detail in company_details %}
+                            {% if company_detail.name == company_name %}
+                                <option selected value="{{ company_name }}">{{ company_name }}</option>
+                            {% else %}
+                                <option value="{{ company_detail.name }}">{{ company_detail.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+			    {% else %}
+                    {% for company_detail in company_details %}
+                        {{ company_detail.name }}
+                    {% endfor %}
+                {% endif %}
+		  </address>
+		  <address>
+			<strong><i class="fa fa-lock" aria-hidden="true"></i> Role</strong><br>
+			Owner
+		  </address>
+		  <hr>
+		  <h5>User Settings</h5>
+		  <div class="list-group">
+			<a class="list-group-item" href="/personalinfo"><i class="fa fa-user" aria-hidden="true"></i> Personal Settings</a>
+			<a class="list-group-item" href="/personalinfo/change_email"><i class="fa fa-lock" aria-hidden="true"></i> Email &amp; Password</a>
+		  </div>
+
+		  <h5>Company Settings</h5>
+		  <div class="list-group">
+			<a class="list-group-item" href="/company/new"><i class="fa fa-plus-square" aria-hidden="true"></i> New Company...</a>
+			  <a class="list-group-item" href="/company/settings"><i class="fa fa-gear" aria-hidden="true"></i> Company Settings</a>
+				<a class="list-group-item" href="/company/roles"><i class="fa fa-users" aria-hidden="true"></i> Invite / Manage Users</a>
+				<a class="list-group-item" href="/invoices"><i class="fa fa-table" aria-hidden="true"></i> Invoices</a>
+				<a class="list-group-item" href="/company/subscription"><i class="fa fa-toolbox" aria-hidden="true"></i> Subscriptions</a>
+				<a class="list-group-item" href="/company/credit_card"><i class="fa fa-credit-card" aria-hidden="true"></i> Update Credit Card</a>
+		  </div>
+		<div class="list-group">
+		  <a class="list-group-item" rel="nofollow" data-method="delete" href="/logout"><i class="fa fa-running" aria-hidden="true"></i> Log Out</a>
+		</div>
+	  </div>
+	</div>
+  </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'recipecost.jpg' %}" alt="RecipeCost Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Recipe Cost</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-2">
+          <br/><br/>
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item menu-open">
+            <li class="nav-item">
+                <a class="venobox vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/428390348"><i class="fa fa-video-camera" aria-hidden="true"></i> Watch Introduction Video</a>
+              </li>
+                <br/>
+              <li class="nav-item">
+                <a href="#"><i class="fa fa-commenting" aria-hidden="true"></i> Send Feedback</a>
+              </li>
+          </li>
+        </ul>
+      </nav>
+        <div style="padding-top: 250px">
+            <p style="font-size: 16px"><h3 style="color: white;">{{ company_name }}</h3><span style="color: white;">(owner)</span></p>
+        </div>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+    {% block main %}
+      <div class="content-wrapper">
+        <div class="content">
+          <div class="container-fluid">
+              <br/><br/>
+              <div class="modal-content" id="nut-loading" style="display: none">
+                  <div class="modal-header">
+                    <h4 class="modal-title" style="padding-left: 500px">Link to Nutrient Database</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="nutri-close-btn"><span aria-hidden="true">×</span></button>
+                  </div>
+                <div class="modal-body">
+                    <label class="integer optional" for="ingredient_cached_usda_item_id">Search Nutrient Database</label>
+                    <div class="form-group hidden ingredient_cached_usda_item_id"><div><input class="form-control hidden" type="hidden" name="ing-nutri-search" id="ing-search"></div></div>
+                    <div class="input-group leading">
+                      <input type="text" name="cached_usda_item_name" id="cached_usda_item_name" class="form-control" autocomplete="off">
+                      <span class="input-group-btn"><button id="clear_food" class="btn btn-info" type="button" style="display: block">Search</button></span>
+                        <span class="input-group-btn"><button id="reset_food" class="btn btn-info" type="button" style="display: none">Unlink</button></span>
+                    </div>
+                    <div id="nutrient_database_search_results" style="display: none;">
+
+                    </div>
+                </div>
+              </div>
+              {% if fail %}
+                  <p><span style="color: crimson">{{ fail }}</span></p>
+              {% endif %}
+              <form method="post" action="/recipe/new">
+                  {% csrf_token %}
+                  {{ form.name.errors }}
+                  {{ form.name.label_tag }}
+                  {{ form.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  {{ form.price.errors }}
+                  {{ form.price.label_tag }}
+                  {{ form.price }}<br/><br/>
+                  {{ form.caseQuantity.errors }}
+                  {{ form.caseQuantity.label_tag }}
+                  {{ form.caseQuantity}}&nbsp;&nbsp;
+                  {{ form.packSize.errors }}
+                  {{ form.packSize.label_tag }}
+                  {{ form.packSize}}&nbsp;&nbsp;
+                  {{ form.qtyUnits.errors }}
+                  {{ form.qtyUnits.label_tag }}
+                  {{ form.qtyUnits}}<br/><br/>
+                  <!--<div id="category-price-list">
+
+                  </div>-->
+                  {{ form.category.errors }}
+                  {{ form.category.label_tag }}
+                  {{ form.category}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <input type="hidden" name="customcategory" placeholder="Enter Category" id="customcategoryid">
+                  <br/><br/>
+                  {{ form.orderCode.errors }}
+                  {{ form.orderCode.label_tag }}
+                  {{ form.orderCode}}<br/><br/>
+                  {{ form.suppliers.errors }}
+                  {{ form.suppliers.label_tag }}
+                  {{ form.suppliers }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <input type="hidden" name="customsupplier" placeholder="Enter Supplier" id="customsupplierid">
+                  <br/><br/>
+                  {{ form.brand.errors }}
+                  {{ form.brand.label_tag }}
+                  {{ form.brand}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  {{ form.countryOfOrigin.errors }}
+                  {{ form.countryOfOrigin.label_tag }}
+                  {{ form.countryOfOrigin }}&nbsp;&nbsp;&nbsp;
+                  {{ form.storageAreas.errors }}
+                  {{ form.storageAreas.label_tag }}
+                  {{ form.storageAreas}}
+                  <br/><br/>
+                  {{ form.parLevel.errors }}
+                  {{ form.parLevel.label_tag }}
+                  {{ form.parLevel}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  {{ form.parUnits.errors }}
+                  {{ form.parUnits.label_tag }}
+                  {{ form.parUnits }}<br/><br/>
+                  <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="nutrition-database-link">
+                        <a role="button" data-toggle="collapse" href="#collapse-nutrition-database-link" aria-expanded="true" aria-controls="collapse-nutrition-database-link" class="text-grey-900" style="text-decoration: none;">
+                          <i class="fa fa-apple" aria-hidden="true"></i>Nutrition Data
+                        </a>
+                        <span class="pull-right">
+                          <a role="button" data-toggle="collapse" href="#collapse-nutrition-database-link" aria-expanded="true" aria-controls="collapse-nutrition-database-link" class="">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                          </a>
+                        </span>
+                      </div>
+                      <div id="collapse-nutrition-database-link" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="nutrition-database-link" aria-expanded="true" style="">
+                        <div class="panel-body">
+                        <div id="ingredient-link-to-external-database">
+
+                        <label for="fdc_link">Link to Nutrient Database</label>
+                        <p>You might want to link ingredients to the nutrient database if:
+                          </p><ul>
+                            <li>You want to <strong>create nutrition labels</strong> or <strong>view nutrition data</strong> for this ingredient.</li>
+                            <li>You need to create a <strong>measurement converter</strong> for this ingredient
+                              (measurement converters are used to provide unit conversions, for example, weight (kg, lb) to volume (gallons, pints, liters)).</li>
+                          </ul>
+                        <p></p>
+                            <p id="display-selected-nutrition" style="font-size: 15px;display: none"></p>
+                      <button class="btn btn-info" type="button" id="nutri-link-btn" style="display: block">Click Here To Link...</button>
+                        <button class="btn btn-info" type="button" id="nutri-link-btn-change" style="display: none">Click Here To Change...</button>
+                    </div>
+                        </div>
+                      </div>
+                    </div>
+                  <br/>
+                  <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="measurement-converters">
+                        <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters" class="text-grey-900" style="text-decoration:none;">
+                          <i class="fa fa-balance-scale" aria-hidden="true"></i>Measurement Converters
+                        </a>
+                        <span class="pull-right">
+                          <a role="button" data-toggle="collapse" href="#collapse-measurement-converters" aria-expanded="true" aria-controls="collapse-measurement-converters">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                          </a>
+                        </span>
+                      </div>
+                      <div id="collapse-measurement-converters" class="panel-collapse collapse " role="tabpanel" aria-labelledby="measurement-converters">
+                        <div class="panel-body">
+
+                        <div class="row">
+                          <div class="col-lg-12">
+                              <div id="default-weight-to-volume-conversion-help">
+                      <div class="well">
+                        <p>
+                          If your ingredient is purchased by weight (e.g. lbs, kgs, etc.) but in your recipe you use it as a volume (e.g. cups, tsp, etc.), you'll need
+                          to create a <strong>measurement converter</strong>. You can weigh or measure the ingredient yourself, or you can use an online
+                          conversion tool (we recommend using <a class="text-blue-900" href="https://www.wolframalpha.com/">Wolfram Alpha</a>.
+                          Check out the video below to see how easy this is!).
+                        </p>
+                        <p>If you have linked your ingredient to the <strong>nutrient database</strong> above, we will display any automatic measurement conversions
+                          that are available below <strong>if they exist</strong>.
+                        </p>
+                        <p>
+                          If you need just a little more help, watch our <strong>two minute measurement converter video</strong> and
+                          it should clear up any last questions! <a class="venobox btn btn-info vbox-item" data-vbtype="vimeo" data-autoplay="true" href="https://vimeo.com/422860777"><i class="vmiddle fas fa-video" aria-hidden="true"></i> Watch Video Now</a>
+                        </p>
+                      </div>
+                    </div>
+
+                            <div id="conversion_help" data-food-weight-path="https://recipecostcalculator.net/food_descriptions/conversion_help"></div>
+                            <div class="ingredient-form-checked-measurements-summary-JS"></div>
+                            <div class="form-group measurement-converters measurement-converters-JS">
+                      <label for="measurement_converters" class="form-label optional">Measurement Converters</label>
+                    <br/>
+                    <p id="display-units-measurment-err" style="color: crimson"></p>
+                    <br/>
+                    <p id="display-units-msg"></p>
+
+                    <br/>
+                    <div id="conversion_help" style="display: none">
+
+                    </div>
+                    <input type="hidden" name="nutri-data-link-value" value="" id="nutri-data-link-value">
+                    <input type="hidden" name="nutri-data-fdcid" value="" id="nutri-data-fdcid">
+                    <br/>
+                    <input id="btnAdd" type="button" value="Add New Measurements" />
+                    <br /><br/>
+                    <div id="TextBoxContainer">
+                        <!--Textboxes will be added here -->
+                        <input type="hidden" name="ingMeasurementsData" id="id_ingMeasurementsData" value="">
+                    </div>
+                    <input id="btnGet" type="button" value="Save Measurements" style="visibility: hidden" />
+                    <!-- do logic -->
+
+                      <br>
+                    </div>
+
+
+                          </div>
+                        </div>
+
+                        </div>
+                      </div>
+                  </div>
+                  <br/>
+                  <div class="panel panel-default">
+                      <div class="panel-heading" role="tab" id="supplemental-ingredient-fields">
+                        <a role="button" data-toggle="collapse" href="#collapse-supplemental-ingredient-fields" aria-expanded="true" aria-controls="collapse-supplemental-ingredient-fields" class="text-grey-900" style="text-decoration: none;">
+                          <i class="fa fa-cart-plus" aria-hidden="true"></i>Allergens, Ingredient List, Notes, etc.
+                        </a>
+                        <span class="pull-right">
+                          <a role="button" data-toggle="collapse" href="#collapse-supplemental-ingredient-fields" aria-expanded="true" aria-controls="collapse-supplemental-ingredient-fields" class="">
+                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                          </a>
+                        </span>
+                      </div>
+                      <div id="collapse-supplemental-ingredient-fields" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="supplemental-ingredient-fields" aria-expanded="true" style="">
+                        <div class="panel-body">
+
+                        <div class="row">
+                          <div class="col-lg-6">
+                                <br/>
+                              {{ form.sugarAdded.errors }}
+                              {{ form.sugarAdded.label_tag }}
+                              {{ form.sugarAdded}}<br/>
+                              {{ form.usablePercentage.errors }}
+                              {{ form.usablePercentage.label_tag }}
+                              {{ form.usablePercentage }}<br/>
+                              {{ form.displayName.errors }}
+                              {{ form.displayName.label_tag }}
+                              {{ form.displayName}}<br/>
+                              {{ form.notes.errors }}
+                              {{ form.notes.label_tag }}
+                              {{ form.notes }}<br/>
+                              {{ form.hasMajorAllergens.errors }}
+                              {{ form.hasMajorAllergens.label_tag }}
+                              {{ form.hasMajorAllergens }}
+                              <div id="display-major-allergens" style="visibility: hidden;height: auto">
+                                  {{ form.majorAllergens.errors }}
+                                  {{ form.majorAllergens.label_tag }}
+                                  {{ form.majorAllergens }}<br/>
+                              </div>
+                          </div>
+                        </div>
+                          </div>
+                        </div>
+
+                        </div>
+                  <br/>
+                  <input type="submit" value="Create Ingredient" class="btn btn-success">
+                  <br/>
+              </form>
+              <br/><br/>
+          </div>
+        </div>
+      </div>
+    {% endblock main %}
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    <div class="p-3">
+      <h5>Title</h5>
+      <p>Sidebar content</p>
+    </div>
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+
+  </footer>
+</div>
+{% endblock body %}
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+</body>
+</html>

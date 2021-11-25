@@ -1,0 +1,23 @@
+{% extends 'each_shipping_carriers_base.html' %}
+{% block content %}
+    <div class="content-wrapper">
+        <div>
+            <div>
+                <h3 class="card-title">{{ shipping_carrier.name }}</h3>
+            </div><br/><br/>
+            <div class="panel panel-primary">
+              <div>
+                  <h3>Shipping Carrier Details</h3>
+              </div>
+              <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>Contact:</dt><dd>{% if shipping_carrier.contact_first_name == '' and shipping_carrier.contact_last_name == '' %}Not specified{% else %}{{ shipping_carrier.contact_first_name }} {{ shipping_carrier.contact_last_name }}{% endif %}</dd>
+                    <dt>Email:</dt><dd>{% if shipping_carrier.email == '' %}Not specified{% else %}{{ shipping_carrier.email }}{% endif %}</dd>
+                    <dt>Phone:</dt><dd>{% if shipping_carrier.phone_number == '' %}Not specified{% else %}{{ shipping_carrier.phone_number }}{% endif %}</dd>
+                </dl>
+
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
