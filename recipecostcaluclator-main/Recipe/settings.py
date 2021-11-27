@@ -6,7 +6,7 @@ from decouple import config, Csv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-%o3xa6_!ov+rlw%+p4ue*-!hq&z*50@d&&cvh6ee(td9091mp9)"
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('https://recipe--calculator.herokuapp.com/', default='127.0.0.1', cast=Csv())
 
 DEBUG = True
 
