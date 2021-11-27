@@ -8,8 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-%o3xa6_!ov+rlw%+p4ue*-!hq&z*50@d&&cvh6ee(td9091mp9)"
 ALLOWED_HOSTS = config('https://recipe--calculator.herokuapp.com/', default='127.0.0.1', cast=Csv())
 
-DEBUG = True
+DEBUG = False
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # SENDGRID_EMAIL_API = config('SENDGRID_EMAIL_API')
 # FROM_EMAIL = config('FROM_EMAIL')
 
@@ -101,13 +102,13 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-STATIC_URL = '/static/'
-
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#
+# STATIC_URL = '/static/'
+#
+# # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
 MEDIA_URL = '/media/'
 
